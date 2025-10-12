@@ -76,20 +76,20 @@ class NEATMazeSolver:
         
         # Improved fitness function
         if reached_goal:
-            # HUGE reward for success, massive bonus for efficiency
-            fitness = 5000 + (500 - steps) * 10
+            # Big reward for success, bonus for efficiency
+            fitness = 1000 + (500 - steps) * 2
         else:
-            # Strong reward for getting closer to goal
+            # Reward for getting closer to goal
             max_distance = np.linalg.norm(np.array([0, 0]) - self.env.goal_pos)
-            distance_fitness = (1 - min_distance / max_distance) * 2000
+            distance_fitness = (1 - min_distance / max_distance) * 500
             
-            # Big reward for exploration
-            exploration_bonus = len(self.env.visited_cells) * 5
+            # Reward exploration
+            exploration_bonus = len(self.env.visited_cells) * 2
             
-            # Heavy penalty for timeout
-            timeout_penalty = -500 if steps >= 500 else 0
+            # Penalize timeout
+            timeout_penalty = -100 if steps >= 500 else 0
             
-            fitness = distance_fitness + exploration_bonus + total_reward * 2 + timeout_penalty
+            fitness = distance_fitness + exploration_bonus + total_reward + timeout_penalty
         
         metrics = {
             'fitness': fitness,
@@ -280,12 +280,15 @@ class NEATMazeSolver:
             print("No best genome found. Train first!")
             return
         
-        net = neat.nn.FeedForwardNetwork.create(self.best_genome, self.config)
+        config = neat.Config(neat.DefaultGenome, neat.DefaultReproduction,
+                           neat.DefaultSpeciesSet, neat.DefaultStagnation,
+                           self.config.filename)
+        
+        net = neat.nn.FeedForwardNetwork.create(self.best_genome, config)
         
         results = []
         for episode in range(num_episodes):
-            # Reset with different seed each time
-            obs, _ = self.env.reset(seed=episode)
+            obs, _ = self.env.reset(seed=episode)  # Different seed each episode
             done = False
             total_reward = 0
             steps = 0
@@ -293,6 +296,10 @@ class NEATMazeSolver:
             while not done and steps < 500:
                 output = net.activate(obs)
                 action = np.argmax(output)
+                
+                # Add small randomness for robustness
+                if np.random.random() < 0.05:
+                    action = self.env.action_space.sample()
                 
                 obs, reward, terminated, truncated, info = self.env.step(action)
                 total_reward += reward
@@ -326,14 +333,14 @@ def create_neat_config(filename: str = 'config-neat.txt'):
     
     config_content = """[NEAT]
 fitness_criterion     = max
-fitness_threshold     = 10000
-pop_size              = 200
+fitness_threshold     = 1500
+pop_size              = 150
 reset_on_extinction   = False
 
 [DefaultGenome]
 # node activation options
-activation_default      = tanh
-activation_mutate_rate  = 0.05
+activation_default      = relu
+activation_mutate_rate  = 0.1
 activation_options      = tanh relu sigmoid
 
 # node aggregation options
@@ -347,7 +354,7 @@ bias_init_stdev         = 1.0
 bias_max_value          = 30.0
 bias_min_value          = -30.0
 bias_mutate_power       = 0.5
-bias_mutate_rate        = 0.9
+bias_mutate_rate        = 0.8
 bias_replace_rate       = 0.1
 
 # genome compatibility options
@@ -356,7 +363,7 @@ compatibility_weight_coefficient   = 0.5
 
 # connection add/remove rates
 conn_add_prob           = 0.8
-conn_delete_prob        = 0.1
+conn_delete_prob        = 0.2
 
 # connection enable options
 enabled_default         = True
@@ -367,10 +374,10 @@ initial_connection      = full_direct
 
 # node add/remove rates
 node_add_prob           = 0.5
-node_delete_prob        = 0.1
+node_delete_prob        = 0.2
 
 # network parameters
-num_hidden              = 2
+num_hidden              = 3
 num_inputs              = 12
 num_outputs             = 4
 
