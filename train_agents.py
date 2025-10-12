@@ -33,6 +33,46 @@ def main():
     os.makedirs('logs/neat', exist_ok=True)
     os.makedirs('logs/dqn', exist_ok=True)
     
+    # Test maze solvability first
+    print("="*70)
+    print("TESTING MAZE SOLVABILITY")
+    print("="*70)
+    from collections import deque
+    env_test = MazeEnv()
+    
+    def bfs_test():
+        start = tuple(env_test.start_pos)
+        goal = tuple(env_test.goal_pos)
+        queue = deque([(start, 0)])
+        visited = {start}
+        directions = [(-1, 0), (0, 1), (1, 0), (0, -1)]
+        
+        while queue:
+            (y, x), dist = queue.popleft()
+            if (y, x) == goal:
+                return dist
+            
+            for dy, dx in directions:
+                ny, nx = y + dy, x + dx
+                if (0 <= ny < env_test.height and 0 <= nx < env_test.width and
+                    env_test.maze[ny, nx] != 1 and (ny, nx) not in visited):
+                    visited.add((ny, nx))
+                    queue.append(((ny, nx), dist + 1))
+        return -1
+    
+    optimal_steps = bfs_test()
+    if optimal_steps == -1:
+        print("❌ ERROR: Maze is not solvable!")
+        print("   No path exists from start to goal.")
+        print("   Please fix the maze in env/maze_env.py")
+        return 1
+    
+    print(f"✅ Maze is solvable!")
+    print(f"   Optimal path: {optimal_steps} steps")
+    print(f"   Start: {env_test.start_pos}")
+    print(f"   Goal: {env_test.goal_pos}")
+    print()
+    
     train_neat = not args.dqn_only
     train_dqn = not args.neat_only
     
