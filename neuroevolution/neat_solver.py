@@ -307,8 +307,13 @@ class NEATMazeSolver:
         
         return results
 
-def create_neat_config(filename: str = 'neuroevolution/config-neat.txt'):
+def create_neat_config(filename: str = 'config-neat.txt'):
     """Create NEAT configuration file."""
+    # Create directory only if path contains directory
+    dirname = os.path.dirname(filename)
+    if dirname:
+        os.makedirs(dirname, exist_ok=True)
+    
     config_content = """[NEAT]
 fitness_criterion     = max
 fitness_threshold     = 600
@@ -391,7 +396,6 @@ survival_threshold = 0.2
 min_species_size   = 2
 """
     
-    os.makedirs(os.path.dirname(filename), exist_ok=True)
     with open(filename, 'w') as f:
         f.write(config_content)
     
