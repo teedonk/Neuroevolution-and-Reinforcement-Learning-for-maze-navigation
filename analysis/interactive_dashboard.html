@@ -475,15 +475,12 @@
         let speed = 1;
         let frame = 0;
 
-        // Agent states
+        // Agent states - now tracking multiple agents per population
         const agents = {
             neat: {
-                pos: [0, 0],
-                steps: 0,
-                reward: 0,
-                explored: new Set(),
-                trajectory: [],
-                qValues: [0.25, 0.25, 0.25, 0.25]
+                population: [], // Array of agents in current generation
+                best: { pos: [0, 0], steps: 0, reward: 0, explored: new Set(), trajectory: [], qValues: [0.25, 0.25, 0.25, 0.25] },
+                current_gen: 0
             },
             dqn: {
                 pos: [0, 0],
@@ -491,9 +488,30 @@
                 reward: 0,
                 explored: new Set(),
                 trajectory: [],
-                qValues: [0.25, 0.25, 0.25, 0.25]
+                qValues: [0.25, 0.25, 0.25, 0.25],
+                episode: 0
             }
         };
+        
+        // Initialize NEAT population
+        function initNEATPopulation() {
+            agents.neat.population = [];
+            const popSize = 5; // Show 5 agents from population
+            for (let i = 0; i < popSize; i++) {
+                agents.neat.population.push({
+                    pos: [0, 0],
+                    steps: 0,
+                    reward: 0,
+                    explored: new Set(['0,0']),
+                    trajectory: [[0, 0]],
+                    qValues: [0.25, 0.25, 0.25, 0.25],
+                    color: `hsl(${i * 72}, 70%, 50%)`, // Different color per agent
+                    active: true
+                });
+            }
+        }
+        
+        initNEATPopulation();
 
         // Performance history
         const history = {
@@ -519,7 +537,100 @@
         };
 
         function drawMaze(ctx, agentType) {
-            const agent = agents[agentType];
+            if (agentType === 'neat') {
+                const popAgents = agents.neat.population;
+                
+                // Draw maze cells
+                for (let i = 0; i < maze.length; i++) {
+                    for (let j = 0; j < maze[i].length; j++) {
+                        ctx.fillStyle = colors[maze[i][j]];
+                        ctx.fillRect(j * CELL_SIZE, i * CELL_SIZE, CELL_SIZE, CELL_SIZE);
+                        ctx.strokeStyle = '#95a5a6';
+                        ctx.lineWidth = 1;
+                        ctx.strokeRect(j * CELL_SIZE, i * CELL_SIZE, CELL_SIZE, CELL_SIZE);
+                    }
+                }
+
+                // Draw all population agents
+                popAgents.forEach((agent, idx) => {
+                    if (!agent.active) return;
+                    
+                    // Draw trajectory
+                    ctx.strokeStyle = agent.color;
+                    ctx.lineWidth = 2;
+                    ctx.globalAlpha = 0.3;
+                    ctx.beginPath();
+                    
+                    if (agent.trajectory.length > 1) {
+                        ctx.moveTo(
+                            agent.trajectory[0][1] * CELL_SIZE + CELL_SIZE / 2,
+                            agent.trajectory[0][0] * CELL_SIZE + CELL_SIZE / 2
+                        );
+                        
+                        for (let i = 1; i < agent.trajectory.length; i++) {
+                            ctx.lineTo(
+                                agent.trajectory[i][1] * CELL_SIZE + CELL_SIZE / 2,
+                                agent.trajectory[i][0] * CELL_SIZE + CELL_SIZE / 2
+                            );
+                        }
+                    }
+                    ctx.stroke();
+                    ctx.globalAlpha = 1;
+
+                    // Draw agent
+                    const [y, x] = agent.pos;
+                    ctx.fillStyle = agent.color;
+                    ctx.beginPath();
+                    
+                    // Different shapes for different agents
+                    if (idx === 0) {
+                        // Circle for best agent
+                        ctx.arc(x * CELL_SIZE + CELL_SIZE / 2, y * CELL_SIZE + CELL_SIZE / 2, CELL_SIZE / 4, 0, Math.PI * 2);
+                    } else if (idx === 1) {
+                        // Square
+                        ctx.fillRect(x * CELL_SIZE + CELL_SIZE / 4, y * CELL_SIZE + CELL_SIZE / 4, CELL_SIZE / 2, CELL_SIZE / 2);
+                    } else if (idx === 2) {
+                        // Triangle
+                        ctx.moveTo(x * CELL_SIZE + CELL_SIZE / 2, y * CELL_SIZE + CELL_SIZE / 4);
+                        ctx.lineTo(x * CELL_SIZE + CELL_SIZE * 3/4, y * CELL_SIZE + CELL_SIZE * 3/4);
+                        ctx.lineTo(x * CELL_SIZE + CELL_SIZE / 4, y * CELL_SIZE + CELL_SIZE * 3/4);
+                        ctx.closePath();
+                    } else if (idx === 3) {
+                        // Pentagon
+                        const centerX = x * CELL_SIZE + CELL_SIZE / 2;
+                        const centerY = y * CELL_SIZE + CELL_SIZE / 2;
+                        const radius = CELL_SIZE / 4;
+                        for (let i = 0; i < 5; i++) {
+                            const angle = (i * 2 * Math.PI / 5) - Math.PI / 2;
+                            const px = centerX + radius * Math.cos(angle);
+                            const py = centerY + radius * Math.sin(angle);
+                            if (i === 0) ctx.moveTo(px, py);
+                            else ctx.lineTo(px, py);
+                        }
+                        ctx.closePath();
+                    } else {
+                        // Diamond
+                        ctx.moveTo(x * CELL_SIZE + CELL_SIZE / 2, y * CELL_SIZE + CELL_SIZE / 4);
+                        ctx.lineTo(x * CELL_SIZE + CELL_SIZE * 3/4, y * CELL_SIZE + CELL_SIZE / 2);
+                        ctx.lineTo(x * CELL_SIZE + CELL_SIZE / 2, y * CELL_SIZE + CELL_SIZE * 3/4);
+                        ctx.lineTo(x * CELL_SIZE + CELL_SIZE / 4, y * CELL_SIZE + CELL_SIZE / 2);
+                        ctx.closePath();
+                    }
+                    ctx.fill();
+                    
+                    // Outline
+                    ctx.strokeStyle = '#ffffff';
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+                });
+                
+                // Update stats with best agent
+                const bestAgent = popAgents[0];
+                agents.neat.best = bestAgent;
+                
+            } else {
+                // DQN visualization (single agent)
+                const agent = agents.dqn;
             
             // Draw maze cells
             for (let i = 0; i < maze.length; i++) {
@@ -640,8 +751,111 @@
         }
 
         function simulateStep(agentType) {
-            const agent = agents[agentType];
-            const [y, x] = agent.pos;
+            if (agentType === 'neat') {
+                // Simulate all agents in population
+                agents.neat.population.forEach((agent, idx) => {
+                    if (!agent.active || agent.steps >= 500) return;
+                    
+                    const [y, x] = agent.pos;
+                    
+                    // Update generation counter
+                    if (idx === 0) {
+                        agents.neat.current_gen = Math.floor(frame / 1000);
+                        document.getElementById('neat-gen').textContent = agents.neat.current_gen;
+                    }
+                    
+                    // Goal position
+                    const goalPos = [8, 8];
+                    const dx = goalPos[1] - x;
+                    const dy = goalPos[0] - y;
+                    
+                    // Different strategies per agent (diversity)
+                    let qValues;
+                    const strategy = idx / agents.neat.population.length;
+                    
+                    if (strategy < 0.3) {
+                        // Aggressive toward goal
+                        qValues = [
+                            Math.random() * 0.2 + (dy < 0 ? 0.8 : 0.1),
+                            Math.random() * 0.2 + (dx > 0 ? 0.8 : 0.1),
+                            Math.random() * 0.2 + (dy > 0 ? 0.8 : 0.1),
+                            Math.random() * 0.2 + (dx < 0 ? 0.8 : 0.1)
+                        ];
+                    } else if (strategy < 0.6) {
+                        // Balanced exploration
+                        qValues = [
+                            Math.random() * 0.4 + (dy < 0 ? 0.5 : 0.2),
+                            Math.random() * 0.4 + (dx > 0 ? 0.5 : 0.2),
+                            Math.random() * 0.4 + (dy > 0 ? 0.5 : 0.2),
+                            Math.random() * 0.4 + (dx < 0 ? 0.5 : 0.2)
+                        ];
+                    } else {
+                        // Random exploration
+                        qValues = [
+                            Math.random() * 0.6 + 0.2,
+                            Math.random() * 0.6 + 0.2,
+                            Math.random() * 0.6 + 0.2,
+                            Math.random() * 0.6 + 0.2
+                        ];
+                    }
+
+                    agent.qValues = qValues;
+                    
+                    // Choose action
+                    let action;
+                    if (Math.random() < 0.15) {
+                        action = Math.floor(Math.random() * 4);
+                    } else {
+                        action = qValues.indexOf(Math.max(...qValues));
+                    }
+
+                    // Apply action
+                    const directions = [[-1, 0], [0, 1], [1, 0], [0, -1]];
+                    const [dy_action, dx_action] = directions[action];
+                    const newY = y + dy_action;
+                    const newX = x + dx_action;
+
+                    // Check validity
+                    if (newY >= 0 && newY < maze.length && 
+                        newX >= 0 && newX < maze[0].length && 
+                        maze[newY][newX] !== WALL) {
+                        
+                        agent.pos = [newY, newX];
+                        agent.trajectory.push([newY, newX]);
+                        agent.explored.add(`${newY},${newX}`);
+                        
+                        // Calculate reward
+                        const cellType = maze[newY][newX];
+                        let reward = -0.01;
+                        
+                        if (cellType === GOAL) {
+                            reward = 100;
+                            agent.active = false; // Agent reached goal
+                            document.getElementById(`neat-status`).className = 'status-indicator status-completed';
+                        } else if (cellType === TRAP) {
+                            reward = -10;
+                        } else if (cellType === MISLEAD) {
+                            reward = 0.5;
+                        } else {
+                            const oldDist = Math.sqrt(dx * dx + dy * dy);
+                            const newDist = Math.sqrt(
+                                Math.pow(goalPos[0] - newY, 2) + 
+                                Math.pow(goalPos[1] - newX, 2)
+                            );
+                            reward += (oldDist - newDist) * 0.5;
+                        }
+                        
+                        agent.reward += reward;
+                    } else {
+                        agent.reward -= 1;
+                    }
+
+                    agent.steps++;
+                });
+            } else {
+                // DQN (single agent)
+                const agent = agents.dqn;
+                const [y, x] = agent.pos;
             
             // Update generation/episode counter
             if (agentType === 'neat') {
@@ -788,24 +1002,37 @@
             if (frame % (60 / speed) === 0) {
                 // Update both agents
                 ['neat', 'dqn'].forEach(agentType => {
-                    const agent = agents[agentType];
-                    
-                    // Check if reached goal or max steps
-                    if (agent.steps < 500) {
-                        const [y, x] = agent.pos;
-                        if (maze[y][x] !== GOAL) {
+                    if (agentType === 'neat') {
+                        // Check if any agent still active
+                        const anyActive = agents.neat.population.some(a => a.active && a.steps < 500);
+                        if (anyActive) {
                             simulateStep(agentType);
-                            drawMaze(agentType === 'neat' ? neatCtx : dqnCtx, agentType);
+                            drawMaze(neatCtx, agentType);
                             updateStats(agentType);
                             updateDecisionViz(agentType);
+                        } else if (frame % 600 === 0) {
+                            // New generation
+                            initNEATPopulation();
+                            agents.neat.current_gen++;
+                        }
+                    } else {
+                        const agent = agents.dqn;
+                        if (agent.steps < 500) {
+                            const [y, x] = agent.pos;
+                            if (maze[y][x] !== GOAL) {
+                                simulateStep(agentType);
+                                drawMaze(dqnCtx, agentType);
+                                updateStats(agentType);
+                                updateDecisionViz(agentType);
+                            }
                         }
                     }
                 });
 
                 // Update chart every 10 steps
                 if (frame % 600 === 0) {
-                    history.neat.steps.push(agents.neat.steps);
-                    history.neat.rewards.push(agents.neat.reward);
+                    history.neat.steps.push(agents.neat.best?.steps || 500);
+                    history.neat.rewards.push(agents.neat.best?.reward || -100);
                     history.dqn.steps.push(agents.dqn.steps);
                     history.dqn.rewards.push(agents.dqn.reward);
                     drawChart();
@@ -832,22 +1059,33 @@
             isRunning = false;
             frame = 0;
             
+            // Reset NEAT population
+            initNEATPopulation();
+            agents.neat.current_gen = 0;
+            
+            // Reset DQN
+            agents.dqn = {
+                pos: [0, 0],
+                steps: 0,
+                reward: 0,
+                explored: new Set(['0,0']),
+                trajectory: [[0, 0]],
+                qValues: [0.25, 0.25, 0.25, 0.25],
+                episode: 0
+            };
+            
             ['neat', 'dqn'].forEach(agentType => {
-                agents[agentType] = {
-                    pos: [0, 0],
-                    steps: 0,
-                    reward: 0,
-                    explored: new Set(['0,0']),
-                    trajectory: [[0, 0]],
-                    qValues: [0.25, 0.25, 0.25, 0.25]
-                };
-                
                 drawMaze(agentType === 'neat' ? neatCtx : dqnCtx, agentType);
                 updateStats(agentType);
                 updateDecisionViz(agentType);
                 
                 document.getElementById(`${agentType}-status`).className = 'status-indicator status-paused';
             });
+
+            history.neat = { steps: [], rewards: [] };
+            history.dqn = { steps: [], rewards: [] };
+            drawChart();
+        }});
 
             history.neat = { steps: [], rewards: [] };
             history.dqn = { steps: [], rewards: [] };
