@@ -78,17 +78,17 @@ class NEATMazeSolver:
         # Improved fitness function
         if reached_goal:
             # Big reward for success, bonus for efficiency
-            fitness = 1000 + (500 - steps) * 2
+            fitness = 2000 + (500 - steps) * 5  # Up to 4500 for fast solution
         else:
             # Reward for getting closer to goal
             max_distance = np.linalg.norm(np.array([0, 0]) - self.env.goal_pos)
-            distance_fitness = (1 - min_distance / max_distance) * 500
+            distance_fitness = (1 - min_distance / max_distance) * 800
             
-            # Reward exploration
-            exploration_bonus = len(self.env.visited_cells) * 2
+            # Reward exploration heavily
+            exploration_bonus = len(self.env.visited_cells) * 5
             
             # Penalize timeout
-            timeout_penalty = -100 if steps >= 500 else 0
+            timeout_penalty = -200 if steps >= 500 else 0
             
             fitness = distance_fitness + exploration_bonus + total_reward + timeout_penalty
         
