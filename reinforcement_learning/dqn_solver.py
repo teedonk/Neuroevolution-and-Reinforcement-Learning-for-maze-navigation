@@ -409,14 +409,18 @@ class DQNMazeSolver:
         results = []
         
         for episode in range(num_episodes):
-            # Reset with different seed
-            state, _ = self.env.reset(seed=episode + 1000)
+            state, _ = self.env.reset(seed=episode)  # Different seed each episode
             episode_reward = 0
             steps = 0
             done = False
             
             while not done and steps < 500:
-                action = self.select_action(state, training=False)
+                # Use trained policy with small exploration for robustness
+                if np.random.random() < 0.05:  # 5% exploration during eval
+                    action = self.env.action_space.sample()
+                else:
+                    action = self.select_action(state, training=False)
+                
                 state, reward, terminated, truncated, info = self.env.step(action)
                 episode_reward += reward
                 steps += 1
