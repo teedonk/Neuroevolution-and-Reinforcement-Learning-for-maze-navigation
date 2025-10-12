@@ -297,6 +297,10 @@
                     NEAT (Neuroevolution)
                     <span class="status-indicator status-running" id="neat-status"></span>
                 </h2>
+                <div style="text-align: center; color: #666; font-size: 0.9em; margin-bottom: 10px;">
+                    <strong>Generation:</strong> <span id="neat-gen">0</span> | 
+                    <strong>Population:</strong> 150
+                </div>
                 
                 <div class="maze-container">
                     <canvas id="neat-canvas" width="400" height="400"></canvas>
@@ -358,6 +362,10 @@
                     DQN (Deep Q-Network)
                     <span class="status-indicator status-running" id="dqn-status"></span>
                 </h2>
+                <div style="text-align: center; color: #666; font-size: 0.9em; margin-bottom: 10px;">
+                    <strong>Episode:</strong> <span id="dqn-episode">0</span> | 
+                    <strong>Epsilon:</strong> <span id="dqn-epsilon">1.00</span>
+                </div>
                 
                 <div class="maze-container">
                     <canvas id="dqn-canvas" width="400" height="400"></canvas>
@@ -634,6 +642,15 @@
         function simulateStep(agentType) {
             const agent = agents[agentType];
             const [y, x] = agent.pos;
+            
+            // Update generation/episode counter
+            if (agentType === 'neat') {
+                document.getElementById('neat-gen').textContent = Math.floor(frame / 600);
+            } else {
+                document.getElementById('dqn-episode').textContent = Math.floor(frame / 60);
+                document.getElementById('dqn-epsilon').textContent = 
+                    (1.0 - Math.floor(frame / 60) * 0.002).toFixed(2);
+            }
             
             // Simulate neural network decision making
             // Different strategies for NEAT vs DQN
