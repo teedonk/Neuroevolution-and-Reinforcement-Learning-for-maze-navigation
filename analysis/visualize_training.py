@@ -134,8 +134,8 @@ class TrainingVisualizer:
         # Bar comparison
         methods = ['NEAT', 'DQN']
         final_success = [
-            neat_success[-1] if neat_success else 0,
-            dqn_success_rate[-1] if dqn_success_rate else 0
+            neat_success[-1] if neat_success and len(neat_success) > 0 else 0,
+            dqn_success_rate[-1] if len(dqn_success_rate) > 0 else 0
         ]
         
         colors = ['#3498db', '#e74c3c']
