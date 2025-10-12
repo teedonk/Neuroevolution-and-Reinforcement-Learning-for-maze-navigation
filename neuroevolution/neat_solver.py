@@ -76,20 +76,20 @@ class NEATMazeSolver:
         
         # Improved fitness function
         if reached_goal:
-            # Big reward for success, bonus for efficiency
-            fitness = 1000 + (500 - steps) * 2
+            # HUGE reward for success, massive bonus for efficiency
+            fitness = 5000 + (500 - steps) * 10
         else:
-            # Reward for getting closer to goal
+            # Strong reward for getting closer to goal
             max_distance = np.linalg.norm(np.array([0, 0]) - self.env.goal_pos)
-            distance_fitness = (1 - min_distance / max_distance) * 500
+            distance_fitness = (1 - min_distance / max_distance) * 2000
             
-            # Reward exploration
-            exploration_bonus = len(self.env.visited_cells) * 2
+            # Big reward for exploration
+            exploration_bonus = len(self.env.visited_cells) * 5
             
-            # Penalize timeout
-            timeout_penalty = -100 if steps >= 500 else 0
+            # Heavy penalty for timeout
+            timeout_penalty = -500 if steps >= 500 else 0
             
-            fitness = distance_fitness + exploration_bonus + total_reward + timeout_penalty
+            fitness = distance_fitness + exploration_bonus + total_reward * 2 + timeout_penalty
         
         metrics = {
             'fitness': fitness,
@@ -284,7 +284,8 @@ class NEATMazeSolver:
         
         results = []
         for episode in range(num_episodes):
-            obs, _ = self.env.reset()
+            # Reset with different seed each time
+            obs, _ = self.env.reset(seed=episode)
             done = False
             total_reward = 0
             steps = 0
@@ -325,8 +326,8 @@ def create_neat_config(filename: str = 'config-neat.txt'):
     
     config_content = """[NEAT]
 fitness_criterion     = max
-fitness_threshold     = 600
-pop_size              = 150
+fitness_threshold     = 10000
+pop_size              = 200
 reset_on_extinction   = False
 
 [DefaultGenome]
@@ -346,7 +347,7 @@ bias_init_stdev         = 1.0
 bias_max_value          = 30.0
 bias_min_value          = -30.0
 bias_mutate_power       = 0.5
-bias_mutate_rate        = 0.7
+bias_mutate_rate        = 0.9
 bias_replace_rate       = 0.1
 
 # genome compatibility options
@@ -354,8 +355,8 @@ compatibility_disjoint_coefficient = 1.0
 compatibility_weight_coefficient   = 0.5
 
 # connection add/remove rates
-conn_add_prob           = 0.7
-conn_delete_prob        = 0.2
+conn_add_prob           = 0.8
+conn_delete_prob        = 0.1
 
 # connection enable options
 enabled_default         = True
@@ -365,8 +366,8 @@ feed_forward            = True
 initial_connection      = full_direct
 
 # node add/remove rates
-node_add_prob           = 0.4
-node_delete_prob        = 0.2
+node_add_prob           = 0.5
+node_delete_prob        = 0.1
 
 # network parameters
 num_hidden              = 2
@@ -388,7 +389,7 @@ weight_init_stdev       = 1.0
 weight_max_value        = 30
 weight_min_value        = -30
 weight_mutate_power     = 0.5
-weight_mutate_rate      = 0.8
+weight_mutate_rate      = 0.9
 weight_replace_rate     = 0.1
 
 [DefaultSpeciesSet]
@@ -396,11 +397,11 @@ compatibility_threshold = 3.0
 
 [DefaultStagnation]
 species_fitness_func = max
-max_stagnation       = 20
-species_elitism      = 2
+max_stagnation       = 15
+species_elitism      = 3
 
 [DefaultReproduction]
-elitism            = 3
+elitism            = 5
 survival_threshold = 0.2
 min_species_size   = 2
 """
