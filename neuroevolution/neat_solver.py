@@ -19,6 +19,7 @@ class NEATMazeSolver:
         self.config = neat.Config(neat.DefaultGenome, neat.DefaultReproduction,
                                  neat.DefaultSpeciesSet, neat.DefaultStagnation,
                                  config_path)
+        self.config_path = config_path  # Store config path for later use
         
         self.log_dir = log_dir
         os.makedirs(log_dir, exist_ok=True)
