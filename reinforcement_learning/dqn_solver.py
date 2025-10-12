@@ -409,7 +409,8 @@ class DQNMazeSolver:
         results = []
         
         for episode in range(num_episodes):
-            state, _ = self.env.reset()
+            # Reset with different seed
+            state, _ = self.env.reset(seed=episode + 1000)
             episode_reward = 0
             steps = 0
             done = False
