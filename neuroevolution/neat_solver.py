@@ -54,6 +54,7 @@ class NEATMazeSolver:
         total_reward = 0
         steps = 0
         reached_goal = False
+        min_distance = float('inf')
         
         while not done and steps < 500:
             # Get action from neural network
@@ -65,29 +66,37 @@ class NEATMazeSolver:
             steps += 1
             done = terminated or truncated
             
+            # Track minimum distance reached
+            current_distance = np.linalg.norm(self.env.agent_pos - self.env.goal_pos)
+            min_distance = min(min_distance, current_distance)
+            
             if terminated and self.env.maze[int(self.env.agent_pos[0]), 
                                            int(self.env.agent_pos[1])] == self.env.GOAL:
                 reached_goal = True
         
-        # Fitness function
+        # Improved fitness function
         if reached_goal:
-            fitness = 100 + (500 - steps)  # Bonus for reaching goal quickly
+            # Big reward for success, bonus for efficiency
+            fitness = 1000 + (500 - steps) * 2
         else:
-            # Reward getting closer to goal
-            final_distance = np.linalg.norm(self.env.agent_pos - self.env.goal_pos)
+            # Reward for getting closer to goal
             max_distance = np.linalg.norm(np.array([0, 0]) - self.env.goal_pos)
-            distance_fitness = (1 - final_distance / max_distance) * 50
+            distance_fitness = (1 - min_distance / max_distance) * 500
             
             # Reward exploration
-            exploration_bonus = len(self.env.visited_cells) * 0.5
+            exploration_bonus = len(self.env.visited_cells) * 2
             
-            fitness = distance_fitness + exploration_bonus + total_reward
+            # Penalize timeout
+            timeout_penalty = -100 if steps >= 500 else 0
+            
+            fitness = distance_fitness + exploration_bonus + total_reward + timeout_penalty
         
         metrics = {
             'fitness': fitness,
             'reached_goal': reached_goal,
             'steps': steps,
             'final_distance': np.linalg.norm(self.env.agent_pos - self.env.goal_pos),
+            'min_distance': min_distance,
             'cells_explored': len(self.env.visited_cells),
             'trajectory': self.env.get_trajectory().copy()
         }
@@ -345,8 +354,8 @@ compatibility_disjoint_coefficient = 1.0
 compatibility_weight_coefficient   = 0.5
 
 # connection add/remove rates
-conn_add_prob           = 0.5
-conn_delete_prob        = 0.3
+conn_add_prob           = 0.7
+conn_delete_prob        = 0.2
 
 # connection enable options
 enabled_default         = True
@@ -356,11 +365,11 @@ feed_forward            = True
 initial_connection      = full_direct
 
 # node add/remove rates
-node_add_prob           = 0.3
+node_add_prob           = 0.4
 node_delete_prob        = 0.2
 
 # network parameters
-num_hidden              = 0
+num_hidden              = 2
 num_inputs              = 12
 num_outputs             = 4
 
