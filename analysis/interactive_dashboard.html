@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maze Navigation: NEAT vs DQN - Live Comparison</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .subtitle {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .agent-panel {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .agent-title {
+            font-size: 1.8em;
+            font-weight: bold;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid;
+        }
+
+        .neat-title {
+            color: #3498db;
+            border-color: #3498db;
+        }
+
+        .dqn-title {
+            color: #e74c3c;
+            border-color: #e74c3c;
+        }
+
+        .maze-container {
+            position: relative;
+            background: white;
+            border-radius: 10px;
+            padding: 10px;
+            margin-bottom: 20px;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        canvas {
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            display: block;
+            margin: 0 auto;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .controls {
+            grid-column: 1 / -1;
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 15px;
+            margin-top: 20px;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 12px 30px;
+            font-size: 1em;
+            font-weight: bold;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+        }
+
+        .btn-start {
+            background: #27ae60;
+            color: white;
+        }
+
+        .btn-pause {
+            background: #f39c12;
+            color: white;
+        }
+
+        .btn-reset {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .btn-speed {
+            background: #3498db;
+            color: white;
+        }
+
+        .decision-viz {
+            margin-top: 15px;
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+        }
+
+        .decision-label {
+            font-size: 0.9em;
+            font-weight: bold;
+            color: #666;
+            margin-bottom: 8px;
+        }
+
+        .action-bars {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .action-bar {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .action-name {
+            width: 60px;
+            font-size: 0.85em;
+            color: #666;
+        }
+
+        .bar-container {
+            flex: 1;
+            height: 20px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            transition: width 0.3s;
+            border-radius: 10px;
+        }
+
+        .comparison-metrics {
+            grid-column: 1 / -1;
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 15px;
+            margin-top: 20px;
+        }
+
+        .metrics-title {
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .chart-container {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            height: 200px;
+        }
+
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 10px;
+            font-size: 0.9em;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-left: 10px;
+        }
+
+        .status-running { background: #27ae60; }
+        .status-paused { background: #f39c12; }
+        .status-completed { background: #3498db; }
+        .status-failed { background: #e74c3c; }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .pulsing {
+            animation: pulse 1s infinite;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🧠 Neuroevolution vs Reinforcement Learning 🤖</h1>
+            <p class="subtitle">Real-time Maze Navigation Comparison: How They React, Decide, and Adapt</p>
+        </header>
+
+        <div class="main-content">
+            <!-- NEAT Panel -->
+            <div class="agent-panel">
+                <h2 class="agent-title neat-title">
+                    NEAT (Neuroevolution)
+                    <span class="status-indicator status-running" id="neat-status"></span>
+                </h2>
+                
+                <div class="maze-container">
+                    <canvas id="neat-canvas" width="400" height="400"></canvas>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-label">Steps</div>
+                        <div class="stat-value" id="neat-steps">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Reward</div>
+                        <div class="stat-value" id="neat-reward">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Distance</div>
+                        <div class="stat-value" id="neat-distance">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Explored</div>
+                        <div class="stat-value" id="neat-explored">0</div>
+                    </div>
+                </div>
+
+                <div class="decision-viz">
+                    <div class="decision-label">Decision Making (Q-Values)</div>
+                    <div class="action-bars">
+                        <div class="action-bar">
+                            <span class="action-name">⬆️ Up</span>
+                            <div class="bar-container">
+                                <div class="bar-fill" id="neat-up" style="width: 0%"></div>
+                            </div>
+                        </div>
+                        <div class="action-bar">
+                            <span class="action-name">➡️ Right</span>
+                            <div class="bar-container">
+                                <div class="bar-fill" id="neat-right" style="width: 0%"></div>
+                            </div>
+                        </div>
+                        <div class="action-bar">
+                            <span class="action-name">⬇️ Down</span>
+                            <div class="bar-container">
+                                <div class="bar-fill" id="neat-down" style="width: 0%"></div>
+                            </div>
+                        </div>
+                        <div class="action-bar">
+                            <span class="action-name">⬅️ Left</span>
+                            <div class="bar-container">
+                                <div class="bar-fill" id="neat-left" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- DQN Panel -->
+            <div class="agent-panel">
+                <h2 class="agent-title dqn-title">
+                    DQN (Deep Q-Network)
+                    <span class="status-indicator status-running" id="dqn-status"></span>
+                </h2>
+                
+                <div class="maze-container">
+                    <canvas id="dqn-canvas" width="400" height="400"></canvas>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-label">Steps</div>
+                        <div class="stat-value" id="dqn-steps">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Reward</div>
+                        <div class="stat-value" id="dqn-reward">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Distance</div>
+                        <div class="stat-value" id="dqn-distance">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Explored</div>
+                        <div class="stat-value" id="dqn-explored">0</div>
+                    </div>
+                </div>
+
+                <div class="decision-viz">
+                    <div class="decision-label">Decision Making (Q-Values)</div>
+                    <div class="action-bars">
+                        <div class="action-bar">
+                            <span class="action-name">⬆️ Up</span>
+                            <div class="bar-container">
+                                <div class="bar-fill" id="dqn-up" style="width: 0%"></div>
+                            </div>
+                        </div>
+                        <div class="action-bar">
+                            <span class="action-name">➡️ Right</span>
+                            <div class="bar-container">
+                                <div class="bar-fill" id="dqn-right" style="width: 0%"></div>
+                            </div>
+                        </div>
+                        <div class="action-bar">
+                            <span class="action-name">⬇️ Down</span>
+                            <div class="bar-container">
+                                <div class="bar-fill" id="dqn-down" style="width: 0%"></div>
+                            </div>
+                        </div>
+                        <div class="action-bar">
+                            <span class="action-name">⬅️ Left</span>
+                            <div class="bar-container">
+                                <div class="bar-fill" id="dqn-left" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Controls -->
+            <div class="controls">
+                <h3 style="text-align: center; margin-bottom: 15px;">Simulation Controls</h3>
+                <div class="button-group">
+                    <button class="btn-start" onclick="startSimulation()">▶️ Start</button>
+                    <button class="btn-pause" onclick="pauseSimulation()">⏸️ Pause</button>
+                    <button class="btn-reset" onclick="resetSimulation()">🔄 Reset</button>
+                    <button class="btn-speed" onclick="changeSpeed()">⚡ Speed: 1x</button>
+                </div>
+            </div>
+
+            <!-- Comparison Metrics -->
+            <div class="comparison-metrics">
+                <h3 class="metrics-title">📊 Performance Comparison Over Time</h3>
+                <div class="chart-container">
+                    <canvas id="comparison-chart"></canvas>
+                </div>
+                <div class="legend">
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #3498db;"></div>
+                        <span>NEAT</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #e74c3c;"></div>
+                        <span>DQN</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Maze configuration
+        const maze = [
+            [0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+            [1, 1, 1, 0, 1, 0, 1, 1, 1, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 1, 1, 1, 1, 1, 1, 1, 1, 0],
+            [0, 0, 0, 0, 4, 0, 0, 0, 0, 0],
+            [1, 1, 1, 0, 1, 0, 1, 1, 1, 1],
+            [0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+            [0, 1, 1, 1, 1, 1, 1, 1, 1, 0],
+            [0, 0, 0, 0, 3, 0, 0, 0, 2, 0],
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+        ];
+
+        const CELL_SIZE = 40;
+        const EMPTY = 0, WALL = 1, GOAL = 2, TRAP = 3, MISLEAD = 4;
+
+        // Simulation state
+        let isRunning = false;
+        let speed = 1;
+        let frame = 0;
+
+        // Agent states
+        const agents = {
+            neat: {
+                pos: [0, 0],
+                steps: 0,
+                reward: 0,
+                explored: new Set(),
+                trajectory: [],
+                qValues: [0.25, 0.25, 0.25, 0.25]
+            },
+            dqn: {
+                pos: [0, 0],
+                steps: 0,
+                reward: 0,
+                explored: new Set(),
+                trajectory: [],
+                qValues: [0.25, 0.25, 0.25, 0.25]
+            }
+        };
+
+        // Performance history
+        const history = {
+            neat: { steps: [], rewards: [] },
+            dqn: { steps: [], rewards: [] }
+        };
+
+        // Canvas setup
+        const neatCanvas = document.getElementById('neat-canvas');
+        const dqnCanvas = document.getElementById('dqn-canvas');
+        const neatCtx = neatCanvas.getContext('2d');
+        const dqnCtx = dqnCanvas.getContext('2d');
+        const chartCanvas = document.getElementById('comparison-chart');
+        const chartCtx = chartCanvas.getContext('2d');
+
+        // Cell colors
+        const colors = {
+            [EMPTY]: '#ffffff',
+            [WALL]: '#2c3e50',
+            [GOAL]: '#f39c12',
+            [TRAP]: '#e74c3c',
+            [MISLEAD]: '#e67e22'
+        };
+
+        function drawMaze(ctx, agentType) {
+            const agent = agents[agentType];
+            
+            // Draw maze cells
+            for (let i = 0; i < maze.length; i++) {
+                for (let j = 0; j < maze[i].length; j++) {
+                    ctx.fillStyle = colors[maze[i][j]];
+                    ctx.fillRect(j * CELL_SIZE, i * CELL_SIZE, CELL_SIZE, CELL_SIZE);
+                    ctx.strokeStyle = '#95a5a6';
+                    ctx.lineWidth = 1;
+                    ctx.strokeRect(j * CELL_SIZE, i * CELL_SIZE, CELL_SIZE, CELL_SIZE);
+                }
+            }
+
+            // Draw trajectory
+            ctx.strokeStyle = agentType === 'neat' ? '#3498db' : '#e74c3c';
+            ctx.lineWidth = 3;
+            ctx.globalAlpha = 0.5;
+            ctx.beginPath();
+            
+            if (agent.trajectory.length > 1) {
+                ctx.moveTo(
+                    agent.trajectory[0][1] * CELL_SIZE + CELL_SIZE / 2,
+                    agent.trajectory[0][0] * CELL_SIZE + CELL_SIZE / 2
+                );
+                
+                for (let i = 1; i < agent.trajectory.length; i++) {
+                    ctx.lineTo(
+                        agent.trajectory[i][1] * CELL_SIZE + CELL_SIZE / 2,
+                        agent.trajectory[i][0] * CELL_SIZE + CELL_SIZE / 2
+                    );
+                }
+            }
+            ctx.stroke();
+            ctx.globalAlpha = 1;
+
+            // Draw explored cells
+            ctx.fillStyle = agentType === 'neat' ? 'rgba(52, 152, 219, 0.2)' : 'rgba(231, 76, 60, 0.2)';
+            agent.explored.forEach(cell => {
+                const [i, j] = cell.split(',').map(Number);
+                ctx.fillRect(j * CELL_SIZE, i * CELL_SIZE, CELL_SIZE, CELL_SIZE);
+            });
+
+            // Draw agent
+            const [y, x] = agent.pos;
+            const gradient = ctx.createRadialGradient(
+                x * CELL_SIZE + CELL_SIZE / 2,
+                y * CELL_SIZE + CELL_SIZE / 2,
+                0,
+                x * CELL_SIZE + CELL_SIZE / 2,
+                y * CELL_SIZE + CELL_SIZE / 2,
+                CELL_SIZE / 2
+            );
+            
+            if (agentType === 'neat') {
+                gradient.addColorStop(0, '#3498db');
+                gradient.addColorStop(1, '#2980b9');
+            } else {
+                gradient.addColorStop(0, '#e74c3c');
+                gradient.addColorStop(1, '#c0392b');
+            }
+            
+            ctx.fillStyle = gradient;
+            ctx.beginPath();
+            ctx.arc(
+                x * CELL_SIZE + CELL_SIZE / 2,
+                y * CELL_SIZE + CELL_SIZE / 2,
+                CELL_SIZE / 3,
+                0,
+                Math.PI * 2
+            );
+            ctx.fill();
+            
+            // Agent outline
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 3;
+            ctx.stroke();
+
+            // Direction indicator
+            ctx.fillStyle = '#ffffff';
+            ctx.beginPath();
+            ctx.arc(
+                x * CELL_SIZE + CELL_SIZE / 2,
+                y * CELL_SIZE + CELL_SIZE / 2 - CELL_SIZE / 6,
+                3,
+                0,
+                Math.PI * 2
+            );
+            ctx.fill();
+        }
+
+        function updateStats(agentType) {
+            const agent = agents[agentType];
+            const prefix = agentType;
+            
+            document.getElementById(`${prefix}-steps`).textContent = agent.steps;
+            document.getElementById(`${prefix}-reward`).textContent = agent.reward.toFixed(1);
+            
+            const goalPos = [8, 8];
+            const distance = Math.sqrt(
+                Math.pow(agent.pos[0] - goalPos[0], 2) + 
+                Math.pow(agent.pos[1] - goalPos[1], 2)
+            );
+            document.getElementById(`${prefix}-distance`).textContent = distance.toFixed(2);
+            document.getElementById(`${prefix}-explored`).textContent = agent.explored.size;
+        }
+
+        function updateDecisionViz(agentType) {
+            const agent = agents[agentType];
+            const qValues = agent.qValues;
+            const maxQ = Math.max(...qValues);
+            const minQ = Math.min(...qValues);
+            const range = maxQ - minQ || 1;
+
+            const actions = ['up', 'right', 'down', 'left'];
+            actions.forEach((action, idx) => {
+                const normalized = ((qValues[idx] - minQ) / range) * 100;
+                document.getElementById(`${agentType}-${action}`).style.width = `${normalized}%`;
+            });
+        }
+
+        function simulateStep(agentType) {
+            const agent = agents[agentType];
+            const [y, x] = agent.pos;
+            
+            // Simulate neural network decision making
+            // Different strategies for NEAT vs DQN
+            const goalPos = [8, 8];
+            const dx = goalPos[1] - x;
+            const dy = goalPos[0] - y;
+            
+            let qValues;
+            if (agentType === 'neat') {
+                // NEAT: More explorative, considers multiple paths
+                qValues = [
+                    Math.random() * 0.3 + (dy < 0 ? 0.5 : 0.1),  // Up
+                    Math.random() * 0.3 + (dx > 0 ? 0.5 : 0.1),  // Right
+                    Math.random() * 0.3 + (dy > 0 ? 0.5 : 0.1),  // Down
+                    Math.random() * 0.3 + (dx < 0 ? 0.5 : 0.1)   // Left
+                ];
+            } else {
+                // DQN: More deterministic, value-based
+                qValues = [
+                    Math.random() * 0.2 + (dy < 0 ? 0.7 : 0.05), // Up
+                    Math.random() * 0.2 + (dx > 0 ? 0.7 : 0.05), // Right
+                    Math.random() * 0.2 + (dy > 0 ? 0.7 : 0.05), // Down
+                    Math.random() * 0.2 + (dx < 0 ? 0.7 : 0.05)  // Left
+                ];
+            }
+
+            agent.qValues = qValues;
+            
+            // Choose action (with some randomness)
+            let action;
+            if (Math.random() < 0.1) {
+                action = Math.floor(Math.random() * 4);
+            } else {
+                action = qValues.indexOf(Math.max(...qValues));
+            }
+
+            // Apply action
+            const directions = [[-1, 0], [0, 1], [1, 0], [0, -1]];
+            const [dy_action, dx_action] = directions[action];
+            const newY = y + dy_action;
+            const newX = x + dx_action;
+
+            // Check validity
+            if (newY >= 0 && newY < maze.length && 
+                newX >= 0 && newX < maze[0].length && 
+                maze[newY][newX] !== WALL) {
+                
+                agent.pos = [newY, newX];
+                agent.trajectory.push([newY, newX]);
+                agent.explored.add(`${newY},${newX}`);
+                
+                // Calculate reward
+                const cellType = maze[newY][newX];
+                let reward = -0.01; // Time penalty
+                
+                if (cellType === GOAL) {
+                    reward = 100;
+                    document.getElementById(`${agentType}-status`).className = 'status-indicator status-completed';
+                } else if (cellType === TRAP) {
+                    reward = -10;
+                } else if (cellType === MISLEAD) {
+                    reward = 0.5;
+                } else {
+                    // Distance-based reward
+                    const oldDist = Math.sqrt(dx * dx + dy * dy);
+                    const newDist = Math.sqrt(
+                        Math.pow(goalPos[0] - newY, 2) + 
+                        Math.pow(goalPos[1] - newX, 2)
+                    );
+                    reward += (oldDist - newDist) * 0.5;
+                }
+                
+                agent.reward += reward;
+            } else {
+                agent.reward -= 1; // Wall penalty
+            }
+
+            agent.steps++;
+        }
+
+        function drawChart() {
+            const ctx = chartCtx;
+            const width = chartCanvas.width;
+            const height = chartCanvas.height;
+            
+            ctx.clearRect(0, 0, width, height);
+            
+            if (history.neat.steps.length < 2) return;
+            
+            // Draw grid
+            ctx.strokeStyle = '#e0e0e0';
+            ctx.lineWidth = 1;
+            for (let i = 0; i <= 5; i++) {
+                const y = (height / 5) * i;
+                ctx.beginPath();
+                ctx.moveTo(0, y);
+                ctx.lineTo(width, y);
+                ctx.stroke();
+            }
+
+            // Draw NEAT line
+            ctx.strokeStyle = '#3498db';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            
+            const maxSteps = Math.max(...history.neat.steps, ...history.dqn.steps, 100);
+            const stepWidth = width / Math.max(history.neat.steps.length, 50);
+            
+            history.neat.steps.forEach((steps, i) => {
+                const x = i * stepWidth;
+                const y = height - (steps / maxSteps) * height;
+                if (i === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            });
+            ctx.stroke();
+
+            // Draw DQN line
+            ctx.strokeStyle = '#e74c3c';
+            ctx.beginPath();
+            
+            history.dqn.steps.forEach((steps, i) => {
+                const x = i * stepWidth;
+                const y = height - (steps / maxSteps) * height;
+                if (i === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            });
+            ctx.stroke();
+        }
+
+        function animate() {
+            if (!isRunning) return;
+
+            frame++;
+            
+            if (frame % (60 / speed) === 0) {
+                // Update both agents
+                ['neat', 'dqn'].forEach(agentType => {
+                    const agent = agents[agentType];
+                    
+                    // Check if reached goal or max steps
+                    if (agent.steps < 500) {
+                        const [y, x] = agent.pos;
+                        if (maze[y][x] !== GOAL) {
+                            simulateStep(agentType);
+                            drawMaze(agentType === 'neat' ? neatCtx : dqnCtx, agentType);
+                            updateStats(agentType);
+                            updateDecisionViz(agentType);
+                        }
+                    }
+                });
+
+                // Update chart every 10 steps
+                if (frame % 600 === 0) {
+                    history.neat.steps.push(agents.neat.steps);
+                    history.neat.rewards.push(agents.neat.reward);
+                    history.dqn.steps.push(agents.dqn.steps);
+                    history.dqn.rewards.push(agents.dqn.reward);
+                    drawChart();
+                }
+            }
+
+            requestAnimationFrame(animate);
+        }
+
+        function startSimulation() {
+            isRunning = true;
+            document.getElementById('neat-status').className = 'status-indicator status-running pulsing';
+            document.getElementById('dqn-status').className = 'status-indicator status-running pulsing';
+            animate();
+        }
+
+        function pauseSimulation() {
+            isRunning = false;
+            document.getElementById('neat-status').className = 'status-indicator status-paused';
+            document.getElementById('dqn-status').className = 'status-indicator status-paused';
+        }
+
+        function resetSimulation() {
+            isRunning = false;
+            frame = 0;
+            
+            ['neat', 'dqn'].forEach(agentType => {
+                agents[agentType] = {
+                    pos: [0, 0],
+                    steps: 0,
+                    reward: 0,
+                    explored: new Set(['0,0']),
+                    trajectory: [[0, 0]],
+                    qValues: [0.25, 0.25, 0.25, 0.25]
+                };
+                
+                drawMaze(agentType === 'neat' ? neatCtx : dqnCtx, agentType);
+                updateStats(agentType);
+                updateDecisionViz(agentType);
+                
+                document.getElementById(`${agentType}-status`).className = 'status-indicator status-paused';
+            });
+
+            history.neat = { steps: [], rewards: [] };
+            history.dqn = { steps: [], rewards: [] };
+            drawChart();
+        }
+
+        function changeSpeed() {
+            speed = speed === 1 ? 2 : speed === 2 ? 4 : 1;
+            document.querySelector('.btn-speed').textContent = `⚡ Speed: ${speed}x`;
+        }
+
+        // Initialize
+        window.onload = function() {
+            chartCanvas.width = chartCanvas.parentElement.clientWidth - 30;
+            resetSimulation();
+        };
+    </script>
+</body>
+</html>
