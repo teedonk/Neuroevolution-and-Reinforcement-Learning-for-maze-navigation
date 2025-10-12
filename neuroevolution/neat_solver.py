@@ -279,27 +279,26 @@ class NEATMazeSolver:
         """Evaluate the best genome."""
         if self.best_genome is None:
             print("No best genome found. Train first!")
-            return
+            return []
         
-        config = neat.Config(neat.DefaultGenome, neat.DefaultReproduction,
-                           neat.DefaultSpeciesSet, neat.DefaultStagnation,
-                           self.config.filename)
-        
-        net = neat.nn.FeedForwardNetwork.create(self.best_genome, config)
+        # CRITICAL: Use self.config directly - it's already loaded
+        import neat
+        net = neat.nn.FeedForwardNetwork.create(self.best_genome, self.config)
         
         results = []
         for episode in range(num_episodes):
-            obs, _ = self.env.reset(seed=episode)  # Different seed each episode
+            obs, _ = self.env.reset(seed=episode)
             done = False
             total_reward = 0
             steps = 0
             
             while not done and steps < 500:
                 output = net.activate(obs)
-                action = np.argmax(output)
+                action = output.index(max(output))
                 
-                # Add small randomness for robustness
-                if np.random.random() < 0.05:
+                # Small exploration for robustness
+                import random
+                if random.random() < 0.05:
                     action = self.env.action_space.sample()
                 
                 obs, reward, terminated, truncated, info = self.env.step(action)
@@ -310,7 +309,8 @@ class NEATMazeSolver:
                 if render and episode == 0:
                     self.env.render()
             
-            reached_goal = (terminated and self.env.maze[int(self.env.agent_pos[0]), 
+            reached_goal = (terminated and 
+                           self.env.maze[int(self.env.agent_pos[0]), 
                            int(self.env.agent_pos[1])] == self.env.GOAL)
             
             results.append({
