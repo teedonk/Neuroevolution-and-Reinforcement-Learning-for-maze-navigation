@@ -116,8 +116,6 @@ Neuroevolution-and-Reinforcement-Learning-for-maze-navigation/
 ├── test_robustness.py          # Run robustness tests
 ├── test_maze.py                # Verify maze solvability
 ├── requirements.txt            # Python dependencies
-├── TROUBLESHOOTING.md          # Common issues and fixes
-├── WINDOWS_README.md           # Windows-specific guide
 └── README.md                   # This file
 ```
 
@@ -153,10 +151,6 @@ pip install -r requirements.txt
 # 4. Verify installation
 python -c "import neat; import torch; import gymnasium; print('✅ Installation successful!')"
 ```
-
-### Troubleshooting
-
-See [WINDOWS_README.md](WINDOWS_README.md) for Windows-specific issues or [TROUBLESHOOTING.md](TROUBLESHOOTING.md) for common problems.
 
 ---
 
@@ -555,8 +549,6 @@ For questions, collaborations, or commercial use inquiries, please reach out via
 - [DQN Deep Dive](docs/dqn_tutorial.md) - Reinforcement learning explained
 - [Environment Guide](docs/environment_guide.md) - Maze design principles
 - [Visualization Guide](docs/visualization_guide.md) - Plotting reference
-- [Troubleshooting](TROUBLESHOOTING.md) - Common issues and solutions
-- [Windows Guide](WINDOWS_README.md) - Windows-specific instructions
 
 ### Key Papers
 1. Stanley, K. O., & Miikkulainen, R. (2002). "Evolving Neural Networks through Augmenting Topologies"
