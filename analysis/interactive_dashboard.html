@@ -631,6 +631,90 @@
             } else {
                 // DQN visualization (single agent)
                 const agent = agents.dqn;
+                
+                // Draw maze cells
+                for (let i = 0; i < maze.length; i++) {
+                    for (let j = 0; j < maze[i].length; j++) {
+                        ctx.fillStyle = colors[maze[i][j]];
+                        ctx.fillRect(j * CELL_SIZE, i * CELL_SIZE, CELL_SIZE, CELL_SIZE);
+                        ctx.strokeStyle = '#95a5a6';
+                        ctx.lineWidth = 1;
+                        ctx.strokeRect(j * CELL_SIZE, i * CELL_SIZE, CELL_SIZE, CELL_SIZE);
+                    }
+                }
+
+                // Draw trajectory
+                ctx.strokeStyle = '#e74c3c';
+                ctx.lineWidth = 3;
+                ctx.globalAlpha = 0.5;
+                ctx.beginPath();
+                
+                if (agent.trajectory.length > 1) {
+                    ctx.moveTo(
+                        agent.trajectory[0][1] * CELL_SIZE + CELL_SIZE / 2,
+                        agent.trajectory[0][0] * CELL_SIZE + CELL_SIZE / 2
+                    );
+                    
+                    for (let i = 1; i < agent.trajectory.length; i++) {
+                        ctx.lineTo(
+                            agent.trajectory[i][1] * CELL_SIZE + CELL_SIZE / 2,
+                            agent.trajectory[i][0] * CELL_SIZE + CELL_SIZE / 2
+                        );
+                    }
+                }
+                ctx.stroke();
+                ctx.globalAlpha = 1;
+
+                // Draw explored cells
+                ctx.fillStyle = 'rgba(231, 76, 60, 0.2)';
+                agent.explored.forEach(cell => {
+                    const [i, j] = cell.split(',').map(Number);
+                    ctx.fillRect(j * CELL_SIZE, i * CELL_SIZE, CELL_SIZE, CELL_SIZE);
+                });
+
+                // Draw agent
+                const [y, x] = agent.pos;
+                const gradient = ctx.createRadialGradient(
+                    x * CELL_SIZE + CELL_SIZE / 2,
+                    y * CELL_SIZE + CELL_SIZE / 2,
+                    0,
+                    x * CELL_SIZE + CELL_SIZE / 2,
+                    y * CELL_SIZE + CELL_SIZE / 2,
+                    CELL_SIZE / 2
+                );
+                
+                gradient.addColorStop(0, '#e74c3c');
+                gradient.addColorStop(1, '#c0392b');
+                
+                ctx.fillStyle = gradient;
+                ctx.beginPath();
+                ctx.arc(
+                    x * CELL_SIZE + CELL_SIZE / 2,
+                    y * CELL_SIZE + CELL_SIZE / 2,
+                    CELL_SIZE / 3,
+                    0,
+                    Math.PI * 2
+                );
+                ctx.fill();
+                
+                // Agent outline
+                ctx.strokeStyle = '#ffffff';
+                ctx.lineWidth = 3;
+                ctx.stroke();
+
+                // Direction indicator
+                ctx.fillStyle = '#ffffff';
+                ctx.beginPath();
+                ctx.arc(
+                    x * CELL_SIZE + CELL_SIZE / 2,
+                    y * CELL_SIZE + CELL_SIZE / 2 - CELL_SIZE / 6,
+                    3,
+                    0,
+                    Math.PI * 2
+                );
+                ctx.fill();
+            }
+        }
             
             // Draw maze cells
             for (let i = 0; i < maze.length; i++) {
@@ -750,7 +834,6 @@
             });
         }
 
-        function simulateStep(agentType) {
             if (agentType === 'neat') {
                 // Simulate all agents in population
                 agents.neat.population.forEach((agent, idx) => {
@@ -856,6 +939,79 @@
                 // DQN (single agent)
                 const agent = agents.dqn;
                 const [y, x] = agent.pos;
+            
+                // Update episode counter
+                document.getElementById('dqn-episode').textContent = Math.floor(frame / 60);
+                document.getElementById('dqn-epsilon').textContent = 
+                    (1.0 - Math.floor(frame / 60) * 0.002).toFixed(2);
+                
+                // Goal position
+                const goalPos = [8, 8];
+                const dx = goalPos[1] - x;
+                const dy = goalPos[0] - y;
+                
+                // DQN: More deterministic, value-based
+                let qValues = [
+                    Math.random() * 0.2 + (dy < 0 ? 0.7 : 0.05), // Up
+                    Math.random() * 0.2 + (dx > 0 ? 0.7 : 0.05), // Right
+                    Math.random() * 0.2 + (dy > 0 ? 0.7 : 0.05), // Down
+                    Math.random() * 0.2 + (dx < 0 ? 0.7 : 0.05)  // Left
+                ];
+
+                agent.qValues = qValues;
+                
+                // Choose action (with some randomness)
+                let action;
+                if (Math.random() < 0.1) {
+                    action = Math.floor(Math.random() * 4);
+                } else {
+                    action = qValues.indexOf(Math.max(...qValues));
+                }
+
+                // Apply action
+                const directions = [[-1, 0], [0, 1], [1, 0], [0, -1]];
+                const [dy_action, dx_action] = directions[action];
+                const newY = y + dy_action;
+                const newX = x + dx_action;
+
+                // Check validity
+                if (newY >= 0 && newY < maze.length && 
+                    newX >= 0 && newX < maze[0].length && 
+                    maze[newY][newX] !== WALL) {
+                    
+                    agent.pos = [newY, newX];
+                    agent.trajectory.push([newY, newX]);
+                    agent.explored.add(`${newY},${newX}`);
+                    
+                    // Calculate reward
+                    const cellType = maze[newY][newX];
+                    let reward = -0.01; // Time penalty
+                    
+                    if (cellType === GOAL) {
+                        reward = 100;
+                        document.getElementById(`dqn-status`).className = 'status-indicator status-completed';
+                    } else if (cellType === TRAP) {
+                        reward = -10;
+                    } else if (cellType === MISLEAD) {
+                        reward = 0.5;
+                    } else {
+                        // Distance-based reward
+                        const oldDist = Math.sqrt(dx * dx + dy * dy);
+                        const newDist = Math.sqrt(
+                            Math.pow(goalPos[0] - newY, 2) + 
+                            Math.pow(goalPos[1] - newX, 2)
+                        );
+                        reward += (oldDist - newDist) * 0.5;
+                    }
+                    
+                    agent.reward += reward;
+                } else {
+                    agent.reward -= 1; // Wall penalty
+                }
+
+                agent.steps++;
+            }
+        }
             
             // Update generation/episode counter
             if (agentType === 'neat') {
