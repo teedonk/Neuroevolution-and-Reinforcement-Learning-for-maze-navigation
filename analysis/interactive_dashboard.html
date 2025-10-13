@@ -37,12 +37,6 @@
         h1 {
             font-size: 2.5em;
             margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-        }
-
-        .subtitle {
-            font-size: 1.2em;
-            opacity: 0.9;
         }
 
         .main-content {
@@ -56,41 +50,36 @@
             background: #f8f9fa;
             border-radius: 15px;
             padding: 20px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
 
         .agent-title {
-            font-size: 1.8em;
+            font-size: 1.5em;
             font-weight: bold;
-            margin-bottom: 15px;
+            margin-bottom: 10px;
             padding-bottom: 10px;
             border-bottom: 3px solid;
         }
 
-        .neat-title {
-            color: #3498db;
-            border-color: #3498db;
-        }
+        .neat-title { color: #3498db; border-color: #3498db; }
+        .dqn-title { color: #e74c3c; border-color: #e74c3c; }
 
-        .dqn-title {
-            color: #e74c3c;
-            border-color: #e74c3c;
-        }
-
-        .maze-container {
-            position: relative;
+        .info-bar {
+            text-align: center;
+            color: #666;
+            font-size: 0.9em;
+            margin-bottom: 15px;
+            padding: 8px;
             background: white;
-            border-radius: 10px;
-            padding: 10px;
-            margin-bottom: 20px;
-            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+            border-radius: 8px;
         }
 
         canvas {
             border: 2px solid #ddd;
             border-radius: 8px;
             display: block;
-            margin: 0 auto;
+            width: 100%;
+            height: auto;
+            background: white;
         }
 
         .stats-grid {
@@ -102,73 +91,21 @@
 
         .stat-card {
             background: white;
-            padding: 15px;
-            border-radius: 10px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 12px;
+            border-radius: 8px;
             text-align: center;
         }
 
         .stat-label {
-            font-size: 0.9em;
+            font-size: 0.85em;
             color: #666;
             margin-bottom: 5px;
         }
 
         .stat-value {
-            font-size: 1.8em;
+            font-size: 1.5em;
             font-weight: bold;
             color: #333;
-        }
-
-        .controls {
-            grid-column: 1 / -1;
-            background: #f8f9fa;
-            padding: 20px;
-            border-radius: 15px;
-            margin-top: 20px;
-        }
-
-        .button-group {
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-
-        button {
-            padding: 12px 30px;
-            font-size: 1em;
-            font-weight: bold;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-
-        button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 12px rgba(0,0,0,0.2);
-        }
-
-        .btn-start {
-            background: #27ae60;
-            color: white;
-        }
-
-        .btn-pause {
-            background: #f39c12;
-            color: white;
-        }
-
-        .btn-reset {
-            background: #e74c3c;
-            color: white;
-        }
-
-        .btn-speed {
-            background: #3498db;
-            color: white;
         }
 
         .decision-viz {
@@ -188,7 +125,7 @@
         .action-bars {
             display: flex;
             flex-direction: column;
-            gap: 5px;
+            gap: 8px;
         }
 
         .action-bar {
@@ -200,7 +137,6 @@
         .action-name {
             width: 60px;
             font-size: 0.85em;
-            color: #666;
         }
 
         .bar-container {
@@ -213,12 +149,47 @@
 
         .bar-fill {
             height: 100%;
-            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
             transition: width 0.3s;
             border-radius: 10px;
         }
 
-        .comparison-metrics {
+        .neat-bar { background: #3498db; }
+        .dqn-bar { background: #e74c3c; }
+
+        .controls {
+            grid-column: 1 / -1;
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 15px;
+        }
+
+        button {
+            padding: 12px 30px;
+            font-size: 1em;
+            font-weight: bold;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        button:hover { transform: translateY(-2px); }
+
+        .btn-start { background: #27ae60; color: white; }
+        .btn-pause { background: #f39c12; color: white; }
+        .btn-reset { background: #e74c3c; color: white; }
+        .btn-speed { background: #3498db; color: white; }
+
+        .chart-section {
             grid-column: 1 / -1;
             background: #f8f9fa;
             padding: 20px;
@@ -226,60 +197,18 @@
             margin-top: 20px;
         }
 
-        .metrics-title {
-            font-size: 1.5em;
+        .chart-title {
+            font-size: 1.3em;
             font-weight: bold;
-            margin-bottom: 15px;
             text-align: center;
+            margin-bottom: 15px;
         }
 
-        .chart-container {
+        #chart {
             background: white;
-            padding: 15px;
-            border-radius: 10px;
+            border-radius: 8px;
+            width: 100%;
             height: 200px;
-        }
-
-        .legend {
-            display: flex;
-            justify-content: center;
-            gap: 30px;
-            margin-top: 10px;
-            font-size: 0.9em;
-        }
-
-        .legend-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .legend-color {
-            width: 20px;
-            height: 20px;
-            border-radius: 4px;
-        }
-
-        .status-indicator {
-            display: inline-block;
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            margin-left: 10px;
-        }
-
-        .status-running { background: #27ae60; }
-        .status-paused { background: #f39c12; }
-        .status-completed { background: #3498db; }
-        .status-failed { background: #e74c3c; }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-
-        .pulsing {
-            animation: pulse 1s infinite;
         }
     </style>
 </head>
@@ -287,24 +216,19 @@
     <div class="container">
         <header>
             <h1>🧠 Neuroevolution vs Reinforcement Learning 🤖</h1>
-            <p class="subtitle">Real-time Maze Navigation Comparison: How They React, Decide, and Adapt</p>
+            <p>Real-time Maze Navigation: How They React, Decide, and Adapt</p>
         </header>
 
         <div class="main-content">
             <!-- NEAT Panel -->
             <div class="agent-panel">
-                <h2 class="agent-title neat-title">
-                    NEAT (Neuroevolution)
-                    <span class="status-indicator status-running" id="neat-status"></span>
-                </h2>
-                <div style="text-align: center; color: #666; font-size: 0.9em; margin-bottom: 10px;">
+                <h2 class="agent-title neat-title">NEAT (Neuroevolution)</h2>
+                <div class="info-bar">
                     <strong>Generation:</strong> <span id="neat-gen">0</span> | 
-                    <strong>Population:</strong> 150
+                    <strong>Population:</strong> <span id="neat-pop">5</span> agents
                 </div>
                 
-                <div class="maze-container">
-                    <canvas id="neat-canvas" width="400" height="400"></canvas>
-                </div>
+                <canvas id="neat-canvas" width="400" height="400"></canvas>
 
                 <div class="stats-grid">
                     <div class="stat-card">
@@ -331,25 +255,25 @@
                         <div class="action-bar">
                             <span class="action-name">⬆️ Up</span>
                             <div class="bar-container">
-                                <div class="bar-fill" id="neat-up" style="width: 0%"></div>
+                                <div class="bar-fill neat-bar" id="neat-up" style="width: 25%"></div>
                             </div>
                         </div>
                         <div class="action-bar">
                             <span class="action-name">➡️ Right</span>
                             <div class="bar-container">
-                                <div class="bar-fill" id="neat-right" style="width: 0%"></div>
+                                <div class="bar-fill neat-bar" id="neat-right" style="width: 25%"></div>
                             </div>
                         </div>
                         <div class="action-bar">
                             <span class="action-name">⬇️ Down</span>
                             <div class="bar-container">
-                                <div class="bar-fill" id="neat-down" style="width: 0%"></div>
+                                <div class="bar-fill neat-bar" id="neat-down" style="width: 25%"></div>
                             </div>
                         </div>
                         <div class="action-bar">
                             <span class="action-name">⬅️ Left</span>
                             <div class="bar-container">
-                                <div class="bar-fill" id="neat-left" style="width: 0%"></div>
+                                <div class="bar-fill neat-bar" id="neat-left" style="width: 25%"></div>
                             </div>
                         </div>
                     </div>
@@ -358,18 +282,13 @@
 
             <!-- DQN Panel -->
             <div class="agent-panel">
-                <h2 class="agent-title dqn-title">
-                    DQN (Deep Q-Network)
-                    <span class="status-indicator status-running" id="dqn-status"></span>
-                </h2>
-                <div style="text-align: center; color: #666; font-size: 0.9em; margin-bottom: 10px;">
+                <h2 class="agent-title dqn-title">DQN (Deep Q-Network)</h2>
+                <div class="info-bar">
                     <strong>Episode:</strong> <span id="dqn-episode">0</span> | 
                     <strong>Epsilon:</strong> <span id="dqn-epsilon">1.00</span>
                 </div>
                 
-                <div class="maze-container">
-                    <canvas id="dqn-canvas" width="400" height="400"></canvas>
-                </div>
+                <canvas id="dqn-canvas" width="400" height="400"></canvas>
 
                 <div class="stats-grid">
                     <div class="stat-card">
@@ -396,25 +315,25 @@
                         <div class="action-bar">
                             <span class="action-name">⬆️ Up</span>
                             <div class="bar-container">
-                                <div class="bar-fill" id="dqn-up" style="width: 0%"></div>
+                                <div class="bar-fill dqn-bar" id="dqn-up" style="width: 25%"></div>
                             </div>
                         </div>
                         <div class="action-bar">
                             <span class="action-name">➡️ Right</span>
                             <div class="bar-container">
-                                <div class="bar-fill" id="dqn-right" style="width: 0%"></div>
+                                <div class="bar-fill dqn-bar" id="dqn-right" style="width: 25%"></div>
                             </div>
                         </div>
                         <div class="action-bar">
                             <span class="action-name">⬇️ Down</span>
                             <div class="bar-container">
-                                <div class="bar-fill" id="dqn-down" style="width: 0%"></div>
+                                <div class="bar-fill dqn-bar" id="dqn-down" style="width: 25%"></div>
                             </div>
                         </div>
                         <div class="action-bar">
                             <span class="action-name">⬅️ Left</span>
                             <div class="bar-container">
-                                <div class="bar-fill" id="dqn-left" style="width: 0%"></div>
+                                <div class="bar-fill dqn-bar" id="dqn-left" style="width: 25%"></div>
                             </div>
                         </div>
                     </div>
@@ -423,111 +342,80 @@
 
             <!-- Controls -->
             <div class="controls">
-                <h3 style="text-align: center; margin-bottom: 15px;">Simulation Controls</h3>
+                <h3>Simulation Controls</h3>
                 <div class="button-group">
-                    <button class="btn-start" id="btn-start">▶️ Start</button>
-                    <button class="btn-pause" id="btn-pause">⏸️ Pause</button>
-                    <button class="btn-reset" id="btn-reset">🔄 Reset</button>
-                    <button class="btn-speed" id="btn-speed">⚡ Speed: 1x</button>
+                    <button class="btn-start" id="btnStart">▶️ Start</button>
+                    <button class="btn-pause" id="btnPause">⏸️ Pause</button>
+                    <button class="btn-reset" id="btnReset">🔄 Reset</button>
+                    <button class="btn-speed" id="btnSpeed">⚡ Speed: 1x</button>
                 </div>
             </div>
 
-            <!-- Comparison Metrics -->
-            <div class="comparison-metrics">
-                <h3 class="metrics-title">📊 Performance Comparison Over Time</h3>
-                <div class="chart-container">
-                    <canvas id="comparison-chart"></canvas>
-                </div>
-                <div class="legend">
-                    <div class="legend-item">
-                        <div class="legend-color" style="background: #3498db;"></div>
-                        <span>NEAT</span>
-                    </div>
-                    <div class="legend-item">
-                        <div class="legend-color" style="background: #e74c3c;"></div>
-                        <span>DQN</span>
-                    </div>
-                </div>
+            <!-- Performance Chart -->
+            <div class="chart-section">
+                <h3 class="chart-title">📊 Performance Comparison Over Time</h3>
+                <canvas id="chart" width="800" height="200"></canvas>
             </div>
         </div>
     </div>
 
     <script>
-        // Maze configuration
+        // Maze definition (matches Python environment)
+        // 0=Empty, 1=Wall, 2=Goal, 3=Trap, 4=Misleading
         const maze = [
-            [0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-            [1, 1, 1, 0, 1, 0, 1, 1, 1, 0],
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 1, 1, 1, 1, 1, 1, 1, 1, 0],
-            [0, 0, 0, 0, 4, 0, 0, 0, 0, 0],
-            [1, 1, 1, 0, 1, 0, 1, 1, 1, 1],
-            [0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-            [0, 1, 1, 1, 1, 1, 1, 1, 1, 0],
-            [0, 0, 0, 0, 3, 0, 0, 0, 2, 0],
+            [1, 1, 0, 1, 1, 1, 0, 1, 1, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 1, 1, 1, 0, 1, 1, 1, 1, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 4, 0],  // 4 = Misleading (orange)
+            [0, 1, 1, 1, 0, 1, 0, 1, 1, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [1, 1, 0, 1, 1, 1, 0, 1, 1, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 2, 0],  // 2 = ONLY GOAL (gold star)
             [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
         ];
 
         const CELL_SIZE = 40;
         const EMPTY = 0, WALL = 1, GOAL = 2, TRAP = 3, MISLEAD = 4;
 
+        // Get canvas contexts
+        const neatCanvas = document.getElementById('neat-canvas');
+        const dqnCanvas = document.getElementById('dqn-canvas');
+        const chartCanvas = document.getElementById('chart');
+        const neatCtx = neatCanvas.getContext('2d');
+        const dqnCtx = dqnCanvas.getContext('2d');
+        const chartCtx = chartCanvas.getContext('2d');
+
         // Simulation state
         let isRunning = false;
         let speed = 1;
         let frame = 0;
 
-        // Agent states - now tracking multiple agents per population
+        // Agent states
         const agents = {
             neat: {
-                population: [], // Array of agents in current generation
-                best: { pos: [0, 0], steps: 0, reward: 0, explored: new Set(), trajectory: [], qValues: [0.25, 0.25, 0.25, 0.25] },
-                current_gen: 0
+                population: [],
+                generation: 0
             },
             dqn: {
                 pos: [0, 0],
                 steps: 0,
                 reward: 0,
-                explored: new Set(),
-                trajectory: [],
+                explored: new Set(['0,0']),
+                trajectory: [[0, 0]],
                 qValues: [0.25, 0.25, 0.25, 0.25],
-                episode: 0
+                episode: 0,
+                epsilon: 1.0
             }
         };
-        
-        // Initialize NEAT population
-        function initNEATPopulation() {
-            agents.neat.population = [];
-            const popSize = 5; // Show 5 agents from population
-            for (let i = 0; i < popSize; i++) {
-                agents.neat.population.push({
-                    pos: [0, 0],
-                    steps: 0,
-                    reward: 0,
-                    explored: new Set(['0,0']),
-                    trajectory: [[0, 0]],
-                    qValues: [0.25, 0.25, 0.25, 0.25],
-                    color: `hsl(${i * 72}, 70%, 50%)`, // Different color per agent
-                    active: true
-                });
-            }
-        }
-        
-        initNEATPopulation();
 
         // Performance history
         const history = {
-            neat: { steps: [], rewards: [] },
-            dqn: { steps: [], rewards: [] }
+            neat: [],
+            dqn: []
         };
 
-        // Canvas setup
-        const neatCanvas = document.getElementById('neat-canvas');
-        const dqnCanvas = document.getElementById('dqn-canvas');
-        const neatCtx = neatCanvas.getContext('2d');
-        const dqnCtx = dqnCanvas.getContext('2d');
-        const chartCanvas = document.getElementById('comparison-chart');
-        const chartCtx = chartCanvas.getContext('2d');
-
-        // Cell colors
+        // Colors
         const colors = {
             [EMPTY]: '#ffffff',
             [WALL]: '#2c3e50',
@@ -536,37 +424,137 @@
             [MISLEAD]: '#e67e22'
         };
 
-        function drawMaze(ctx, agentType) {
-            if (agentType === 'neat') {
-                const popAgents = agents.neat.population;
-                
-                // Draw maze cells
-                for (let i = 0; i < maze.length; i++) {
-                    for (let j = 0; j < maze[i].length; j++) {
-                        ctx.fillStyle = colors[maze[i][j]];
-                        ctx.fillRect(j * CELL_SIZE, i * CELL_SIZE, CELL_SIZE, CELL_SIZE);
-                        ctx.strokeStyle = '#95a5a6';
-                        ctx.lineWidth = 1;
-                        ctx.strokeRect(j * CELL_SIZE, i * CELL_SIZE, CELL_SIZE, CELL_SIZE);
-                    }
-                }
+        // Agent colors for NEAT population
+        const agentColors = [
+            '#3498db', // Blue
+            '#2ecc71', // Green  
+            '#9b59b6', // Purple
+            '#e74c3c', // Red
+            '#f39c12'  // Orange
+        ];
 
-                // Draw all population agents
-                popAgents.forEach((agent, idx) => {
+        // Animation state for pulsing goal
+        let goalPulse = 0;
+
+        // Initialize NEAT population
+        function initNEATPopulation() {
+            agents.neat.population = [];
+            for (let i = 0; i < 5; i++) {
+                agents.neat.population.push({
+                    pos: [0, 0],
+                    steps: 0,
+                    reward: 0,
+                    explored: new Set(['0,0']),
+                    trajectory: [[0, 0]],
+                    qValues: [0.25, 0.25, 0.25, 0.25],
+                    color: agentColors[i],
+                    active: true,
+                    id: i
+                });
+            }
+        }
+
+        // Draw special goal visualization
+        function drawGoal(ctx, x, y, pulse) {
+            const centerX = x * CELL_SIZE + CELL_SIZE / 2;
+            const centerY = y * CELL_SIZE + CELL_SIZE / 2;
+            
+            // Pulsing glow effect
+            const glowRadius = CELL_SIZE / 2 + Math.sin(pulse) * 5;
+            const gradient = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, glowRadius);
+            gradient.addColorStop(0, 'rgba(255, 215, 0, 0.8)');
+            gradient.addColorStop(0.5, 'rgba(255, 193, 7, 0.4)');
+            gradient.addColorStop(1, 'rgba(255, 193, 7, 0)');
+            
+            ctx.fillStyle = gradient;
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, glowRadius, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Draw star
+            ctx.fillStyle = '#FFD700'; // Gold
+            ctx.strokeStyle = '#FFA500'; // Orange outline
+            ctx.lineWidth = 2;
+            
+            ctx.beginPath();
+            for (let i = 0; i < 5; i++) {
+                const angle = (i * 4 * Math.PI / 5) - Math.PI / 2;
+                const radius = i % 2 === 0 ? CELL_SIZE / 3 : CELL_SIZE / 6;
+                const px = centerX + radius * Math.cos(angle);
+                const py = centerY + radius * Math.sin(angle);
+                if (i === 0) ctx.moveTo(px, py);
+                else ctx.lineTo(px, py);
+            }
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
+
+            // Add sparkle effect
+            const sparkleSize = 3 + Math.sin(pulse * 2) * 2;
+            ctx.fillStyle = '#FFFFFF';
+            
+            // Top sparkle
+            ctx.beginPath();
+            ctx.arc(centerX, centerY - CELL_SIZE / 4, sparkleSize, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Right sparkle
+            ctx.beginPath();
+            ctx.arc(centerX + CELL_SIZE / 4, centerY, sparkleSize * 0.7, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Left sparkle
+            ctx.beginPath();
+            ctx.arc(centerX - CELL_SIZE / 4, centerY, sparkleSize * 0.7, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Rotating rings
+            const ringAngle = pulse * 2;
+            ctx.strokeStyle = 'rgba(255, 215, 0, 0.5)';
+            ctx.lineWidth = 2;
+            
+            for (let i = 0; i < 3; i++) {
+                const ringRadius = CELL_SIZE / 4 + i * 5;
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, ringRadius, ringAngle, ringAngle + Math.PI);
+                ctx.stroke();
+            }
+        }
+
+        // Draw maze with agents
+        function drawMaze(ctx, type) {
+            // Clear canvas
+            ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+
+            // Draw maze cells
+            for (let i = 0; i < maze.length; i++) {
+                for (let j = 0; j < maze[i].length; j++) {
+                    ctx.fillStyle = colors[maze[i][j]];
+                    ctx.fillRect(j * CELL_SIZE, i * CELL_SIZE, CELL_SIZE, CELL_SIZE);
+                    ctx.strokeStyle = '#95a5a6';
+                    ctx.lineWidth = 1;
+                    ctx.strokeRect(j * CELL_SIZE, i * CELL_SIZE, CELL_SIZE, CELL_SIZE);
+                }
+            }
+
+            // Draw special goal visualization
+            drawGoal(ctx, 8, 8, goalPulse);
+
+            if (type === 'neat') {
+                // Draw all NEAT agents
+                agents.neat.population.forEach((agent, idx) => {
                     if (!agent.active) return;
-                    
+
                     // Draw trajectory
                     ctx.strokeStyle = agent.color;
                     ctx.lineWidth = 2;
-                    ctx.globalAlpha = 0.3;
+                    ctx.globalAlpha = 0.4;
                     ctx.beginPath();
-                    
                     if (agent.trajectory.length > 1) {
                         ctx.moveTo(
                             agent.trajectory[0][1] * CELL_SIZE + CELL_SIZE / 2,
                             agent.trajectory[0][0] * CELL_SIZE + CELL_SIZE / 2
                         );
-                        
                         for (let i = 1; i < agent.trajectory.length; i++) {
                             ctx.lineTo(
                                 agent.trajectory[i][1] * CELL_SIZE + CELL_SIZE / 2,
@@ -582,9 +570,9 @@
                     ctx.fillStyle = agent.color;
                     ctx.beginPath();
                     
-                    // Different shapes for different agents
+                    // Different shapes
                     if (idx === 0) {
-                        // Circle for best agent
+                        // Circle
                         ctx.arc(x * CELL_SIZE + CELL_SIZE / 2, y * CELL_SIZE + CELL_SIZE / 2, CELL_SIZE / 4, 0, Math.PI * 2);
                     } else if (idx === 1) {
                         // Square
@@ -594,19 +582,6 @@
                         ctx.moveTo(x * CELL_SIZE + CELL_SIZE / 2, y * CELL_SIZE + CELL_SIZE / 4);
                         ctx.lineTo(x * CELL_SIZE + CELL_SIZE * 3/4, y * CELL_SIZE + CELL_SIZE * 3/4);
                         ctx.lineTo(x * CELL_SIZE + CELL_SIZE / 4, y * CELL_SIZE + CELL_SIZE * 3/4);
-                        ctx.closePath();
-                    } else if (idx === 3) {
-                        // Pentagon
-                        const centerX = x * CELL_SIZE + CELL_SIZE / 2;
-                        const centerY = y * CELL_SIZE + CELL_SIZE / 2;
-                        const radius = CELL_SIZE / 4;
-                        for (let i = 0; i < 5; i++) {
-                            const angle = (i * 2 * Math.PI / 5) - Math.PI / 2;
-                            const px = centerX + radius * Math.cos(angle);
-                            const py = centerY + radius * Math.sin(angle);
-                            if (i === 0) ctx.moveTo(px, py);
-                            else ctx.lineTo(px, py);
-                        }
                         ctx.closePath();
                     } else {
                         // Diamond
@@ -618,43 +593,24 @@
                     }
                     ctx.fill();
                     
-                    // Outline
                     ctx.strokeStyle = '#ffffff';
                     ctx.lineWidth = 2;
                     ctx.stroke();
                 });
-                
-                // Update stats with best agent
-                const bestAgent = popAgents[0];
-                agents.neat.best = bestAgent;
-                
             } else {
-                // DQN visualization (single agent)
+                // Draw DQN agent
                 const agent = agents.dqn;
                 
-                // Draw maze cells
-                for (let i = 0; i < maze.length; i++) {
-                    for (let j = 0; j < maze[i].length; j++) {
-                        ctx.fillStyle = colors[maze[i][j]];
-                        ctx.fillRect(j * CELL_SIZE, i * CELL_SIZE, CELL_SIZE, CELL_SIZE);
-                        ctx.strokeStyle = '#95a5a6';
-                        ctx.lineWidth = 1;
-                        ctx.strokeRect(j * CELL_SIZE, i * CELL_SIZE, CELL_SIZE, CELL_SIZE);
-                    }
-                }
-
                 // Draw trajectory
                 ctx.strokeStyle = '#e74c3c';
                 ctx.lineWidth = 3;
                 ctx.globalAlpha = 0.5;
                 ctx.beginPath();
-                
                 if (agent.trajectory.length > 1) {
                     ctx.moveTo(
                         agent.trajectory[0][1] * CELL_SIZE + CELL_SIZE / 2,
                         agent.trajectory[0][0] * CELL_SIZE + CELL_SIZE / 2
                     );
-                    
                     for (let i = 1; i < agent.trajectory.length; i++) {
                         ctx.lineTo(
                             agent.trajectory[i][1] * CELL_SIZE + CELL_SIZE / 2,
@@ -665,163 +621,45 @@
                 ctx.stroke();
                 ctx.globalAlpha = 1;
 
-                // Draw explored cells
-                ctx.fillStyle = 'rgba(231, 76, 60, 0.2)';
-                agent.explored.forEach(cell => {
-                    const [i, j] = cell.split(',').map(Number);
-                    ctx.fillRect(j * CELL_SIZE, i * CELL_SIZE, CELL_SIZE, CELL_SIZE);
-                });
-
                 // Draw agent
                 const [y, x] = agent.pos;
-                const gradient = ctx.createRadialGradient(
-                    x * CELL_SIZE + CELL_SIZE / 2,
-                    y * CELL_SIZE + CELL_SIZE / 2,
-                    0,
-                    x * CELL_SIZE + CELL_SIZE / 2,
-                    y * CELL_SIZE + CELL_SIZE / 2,
-                    CELL_SIZE / 2
-                );
-                
-                gradient.addColorStop(0, '#e74c3c');
-                gradient.addColorStop(1, '#c0392b');
-                
-                ctx.fillStyle = gradient;
+                ctx.fillStyle = '#e74c3c';
                 ctx.beginPath();
-                ctx.arc(
-                    x * CELL_SIZE + CELL_SIZE / 2,
-                    y * CELL_SIZE + CELL_SIZE / 2,
-                    CELL_SIZE / 3,
-                    0,
-                    Math.PI * 2
-                );
+                ctx.arc(x * CELL_SIZE + CELL_SIZE / 2, y * CELL_SIZE + CELL_SIZE / 2, CELL_SIZE / 3, 0, Math.PI * 2);
                 ctx.fill();
-                
-                // Agent outline
                 ctx.strokeStyle = '#ffffff';
                 ctx.lineWidth = 3;
                 ctx.stroke();
-
-                // Direction indicator
-                ctx.fillStyle = '#ffffff';
-                ctx.beginPath();
-                ctx.arc(
-                    x * CELL_SIZE + CELL_SIZE / 2,
-                    y * CELL_SIZE + CELL_SIZE / 2 - CELL_SIZE / 6,
-                    3,
-                    0,
-                    Math.PI * 2
-                );
-                ctx.fill();
             }
         }
-            
-            // Draw maze cells
-            for (let i = 0; i < maze.length; i++) {
-                for (let j = 0; j < maze[i].length; j++) {
-                    ctx.fillStyle = colors[maze[i][j]];
-                    ctx.fillRect(j * CELL_SIZE, i * CELL_SIZE, CELL_SIZE, CELL_SIZE);
-                    ctx.strokeStyle = '#95a5a6';
-                    ctx.lineWidth = 1;
-                    ctx.strokeRect(j * CELL_SIZE, i * CELL_SIZE, CELL_SIZE, CELL_SIZE);
-                }
-            }
 
-            // Draw trajectory
-            ctx.strokeStyle = agentType === 'neat' ? '#3498db' : '#e74c3c';
-            ctx.lineWidth = 3;
-            ctx.globalAlpha = 0.5;
-            ctx.beginPath();
-            
-            if (agent.trajectory.length > 1) {
-                ctx.moveTo(
-                    agent.trajectory[0][1] * CELL_SIZE + CELL_SIZE / 2,
-                    agent.trajectory[0][0] * CELL_SIZE + CELL_SIZE / 2
-                );
-                
-                for (let i = 1; i < agent.trajectory.length; i++) {
-                    ctx.lineTo(
-                        agent.trajectory[i][1] * CELL_SIZE + CELL_SIZE / 2,
-                        agent.trajectory[i][0] * CELL_SIZE + CELL_SIZE / 2
-                    );
-                }
-            }
-            ctx.stroke();
-            ctx.globalAlpha = 1;
-
-            // Draw explored cells
-            ctx.fillStyle = agentType === 'neat' ? 'rgba(52, 152, 219, 0.2)' : 'rgba(231, 76, 60, 0.2)';
-            agent.explored.forEach(cell => {
-                const [i, j] = cell.split(',').map(Number);
-                ctx.fillRect(j * CELL_SIZE, i * CELL_SIZE, CELL_SIZE, CELL_SIZE);
-            });
-
-            // Draw agent
-            const [y, x] = agent.pos;
-            const gradient = ctx.createRadialGradient(
-                x * CELL_SIZE + CELL_SIZE / 2,
-                y * CELL_SIZE + CELL_SIZE / 2,
-                0,
-                x * CELL_SIZE + CELL_SIZE / 2,
-                y * CELL_SIZE + CELL_SIZE / 2,
-                CELL_SIZE / 2
-            );
-            
-            if (agentType === 'neat') {
-                gradient.addColorStop(0, '#3498db');
-                gradient.addColorStop(1, '#2980b9');
+        // Update stats display
+        function updateStats(type) {
+            if (type === 'neat') {
+                const best = agents.neat.population[0] || { steps: 0, reward: 0, pos: [0, 0], explored: new Set() };
+                document.getElementById('neat-steps').textContent = best.steps;
+                document.getElementById('neat-reward').textContent = best.reward.toFixed(1);
+                const dist = Math.sqrt(Math.pow(best.pos[0] - 8, 2) + Math.pow(best.pos[1] - 8, 2));
+                document.getElementById('neat-distance').textContent = dist.toFixed(2);
+                document.getElementById('neat-explored').textContent = best.explored.size;
+                document.getElementById('neat-gen').textContent = agents.neat.generation;
             } else {
-                gradient.addColorStop(0, '#e74c3c');
-                gradient.addColorStop(1, '#c0392b');
+                const agent = agents.dqn;
+                document.getElementById('dqn-steps').textContent = agent.steps;
+                document.getElementById('dqn-reward').textContent = agent.reward.toFixed(1);
+                const dist = Math.sqrt(Math.pow(agent.pos[0] - 8, 2) + Math.pow(agent.pos[1] - 8, 2));
+                document.getElementById('dqn-distance').textContent = dist.toFixed(2);
+                document.getElementById('dqn-explored').textContent = agent.explored.size;
+                document.getElementById('dqn-episode').textContent = agent.episode;
+                document.getElementById('dqn-epsilon').textContent = agent.epsilon.toFixed(2);
             }
-            
-            ctx.fillStyle = gradient;
-            ctx.beginPath();
-            ctx.arc(
-                x * CELL_SIZE + CELL_SIZE / 2,
-                y * CELL_SIZE + CELL_SIZE / 2,
-                CELL_SIZE / 3,
-                0,
-                Math.PI * 2
-            );
-            ctx.fill();
-            
-            // Agent outline
-            ctx.strokeStyle = '#ffffff';
-            ctx.lineWidth = 3;
-            ctx.stroke();
-
-            // Direction indicator
-            ctx.fillStyle = '#ffffff';
-            ctx.beginPath();
-            ctx.arc(
-                x * CELL_SIZE + CELL_SIZE / 2,
-                y * CELL_SIZE + CELL_SIZE / 2 - CELL_SIZE / 6,
-                3,
-                0,
-                Math.PI * 2
-            );
-            ctx.fill();
         }
 
-        function updateStats(agentType) {
-            const agent = agents[agentType];
-            const prefix = agentType;
+        // Update decision viz
+        function updateDecisionViz(type) {
+            const agent = type === 'neat' ? agents.neat.population[0] : agents.dqn;
+            if (!agent) return;
             
-            document.getElementById(`${prefix}-steps`).textContent = agent.steps;
-            document.getElementById(`${prefix}-reward`).textContent = agent.reward.toFixed(1);
-            
-            const goalPos = [8, 8];
-            const distance = Math.sqrt(
-                Math.pow(agent.pos[0] - goalPos[0], 2) + 
-                Math.pow(agent.pos[1] - goalPos[1], 2)
-            );
-            document.getElementById(`${prefix}-distance`).textContent = distance.toFixed(2);
-            document.getElementById(`${prefix}-explored`).textContent = agent.explored.size;
-        }
-
-        function updateDecisionViz(agentType) {
-            const agent = agents[agentType];
             const qValues = agent.qValues;
             const maxQ = Math.max(...qValues);
             const minQ = Math.min(...qValues);
@@ -830,67 +668,40 @@
             const actions = ['up', 'right', 'down', 'left'];
             actions.forEach((action, idx) => {
                 const normalized = ((qValues[idx] - minQ) / range) * 100;
-                document.getElementById(`${agentType}-${action}`).style.width = `${normalized}%`;
+                document.getElementById(`${type}-${action}`).style.width = `${normalized}%`;
             });
         }
 
-            if (agentType === 'neat') {
-                // Simulate all agents in population
+        // Simulate step
+        function simulateStep(type) {
+            if (type === 'neat') {
                 agents.neat.population.forEach((agent, idx) => {
-                    if (!agent.active || agent.steps >= 500) return;
+                    // CRITICAL: Stop if reached goal or max steps
+                    if (!agent.active || agent.steps >= 200) return;
                     
-                    const [y, x] = agent.pos;
-                    
-                    // Update generation counter
-                    if (idx === 0) {
-                        agents.neat.current_gen = Math.floor(frame / 1000);
-                        document.getElementById('neat-gen').textContent = agents.neat.current_gen;
+                    // CRITICAL: Check if already at goal - don't move!
+                    const [currentY, currentX] = agent.pos;
+                    if (maze[currentY][currentX] === GOAL) {
+                        agent.active = false; // Stop this agent
+                        return;
                     }
-                    
-                    // Goal position
+
+                    const [y, x] = agent.pos;
                     const goalPos = [8, 8];
                     const dx = goalPos[1] - x;
                     const dy = goalPos[0] - y;
-                    
-                    // Different strategies per agent (diversity)
-                    let qValues;
-                    const strategy = idx / agents.neat.population.length;
-                    
-                    if (strategy < 0.3) {
-                        // Aggressive toward goal
-                        qValues = [
-                            Math.random() * 0.2 + (dy < 0 ? 0.8 : 0.1),
-                            Math.random() * 0.2 + (dx > 0 ? 0.8 : 0.1),
-                            Math.random() * 0.2 + (dy > 0 ? 0.8 : 0.1),
-                            Math.random() * 0.2 + (dx < 0 ? 0.8 : 0.1)
-                        ];
-                    } else if (strategy < 0.6) {
-                        // Balanced exploration
-                        qValues = [
-                            Math.random() * 0.4 + (dy < 0 ? 0.5 : 0.2),
-                            Math.random() * 0.4 + (dx > 0 ? 0.5 : 0.2),
-                            Math.random() * 0.4 + (dy > 0 ? 0.5 : 0.2),
-                            Math.random() * 0.4 + (dx < 0 ? 0.5 : 0.2)
-                        ];
-                    } else {
-                        // Random exploration
-                        qValues = [
-                            Math.random() * 0.6 + 0.2,
-                            Math.random() * 0.6 + 0.2,
-                            Math.random() * 0.6 + 0.2,
-                            Math.random() * 0.6 + 0.2
-                        ];
-                    }
 
+                    // Calculate Q-values based on distance to goal
+                    const qValues = [
+                        Math.random() * 0.3 + (dy < 0 ? 0.7 : 0.1),
+                        Math.random() * 0.3 + (dx > 0 ? 0.7 : 0.1),
+                        Math.random() * 0.3 + (dy > 0 ? 0.7 : 0.1),
+                        Math.random() * 0.3 + (dx < 0 ? 0.7 : 0.1)
+                    ];
                     agent.qValues = qValues;
-                    
+
                     // Choose action
-                    let action;
-                    if (Math.random() < 0.15) {
-                        action = Math.floor(Math.random() * 4);
-                    } else {
-                        action = qValues.indexOf(Math.max(...qValues));
-                    }
+                    const action = Math.random() < 0.15 ? Math.floor(Math.random() * 4) : qValues.indexOf(Math.max(...qValues));
 
                     // Apply action
                     const directions = [[-1, 0], [0, 1], [1, 0], [0, -1]];
@@ -898,311 +709,178 @@
                     const newY = y + dy_action;
                     const newX = x + dx_action;
 
-                    // Check validity
-                    if (newY >= 0 && newY < maze.length && 
-                        newX >= 0 && newX < maze[0].length && 
-                        maze[newY][newX] !== WALL) {
-                        
+                    if (newY >= 0 && newY < maze.length && newX >= 0 && newX < maze[0].length && maze[newY][newX] !== WALL) {
                         agent.pos = [newY, newX];
                         agent.trajectory.push([newY, newX]);
                         agent.explored.add(`${newY},${newX}`);
-                        
-                        // Calculate reward
-                        const cellType = maze[newY][newX];
+
                         let reward = -0.01;
+                        const cellType = maze[newY][newX];
                         
                         if (cellType === GOAL) {
                             reward = 100;
-                            agent.active = false; // Agent reached goal
-                            document.getElementById(`neat-status`).className = 'status-indicator status-completed';
+                            agent.active = false; // STOP agent at goal
+                            console.log(`NEAT Agent ${idx} reached GOAL!`);
                         } else if (cellType === TRAP) {
                             reward = -10;
                         } else if (cellType === MISLEAD) {
-                            reward = 0.5;
-                        } else {
-                            const oldDist = Math.sqrt(dx * dx + dy * dy);
-                            const newDist = Math.sqrt(
-                                Math.pow(goalPos[0] - newY, 2) + 
-                                Math.pow(goalPos[1] - newX, 2)
-                            );
-                            reward += (oldDist - newDist) * 0.5;
+                            reward = 0.5; // Misleading gives small reward but doesn't stop
                         }
                         
                         agent.reward += reward;
-                    } else {
-                        agent.reward -= 1;
                     }
-
                     agent.steps++;
                 });
             } else {
-                // DQN (single agent)
                 const agent = agents.dqn;
-                const [y, x] = agent.pos;
-            
-                // Update episode counter
-                document.getElementById('dqn-episode').textContent = Math.floor(frame / 60);
-                document.getElementById('dqn-epsilon').textContent = 
-                    (1.0 - Math.floor(frame / 60) * 0.002).toFixed(2);
                 
-                // Goal position
+                // CRITICAL: Stop if reached max steps
+                if (agent.steps >= 200) return;
+                
+                // CRITICAL: Check if already at goal - don't move!
+                const [currentY, currentX] = agent.pos;
+                if (maze[currentY][currentX] === GOAL) {
+                    console.log("DQN Agent reached GOAL - STOPPING!");
+                    agent.steps = 200; // Force stop
+                    return;
+                }
+
+                const [y, x] = agent.pos;
                 const goalPos = [8, 8];
                 const dx = goalPos[1] - x;
                 const dy = goalPos[0] - y;
-                
-                // DQN: More deterministic, value-based
-                let qValues = [
-                    Math.random() * 0.2 + (dy < 0 ? 0.7 : 0.05), // Up
-                    Math.random() * 0.2 + (dx > 0 ? 0.7 : 0.05), // Right
-                    Math.random() * 0.2 + (dy > 0 ? 0.7 : 0.05), // Down
-                    Math.random() * 0.2 + (dx < 0 ? 0.7 : 0.05)  // Left
+
+                const qValues = [
+                    Math.random() * 0.2 + (dy < 0 ? 0.8 : 0.05),
+                    Math.random() * 0.2 + (dx > 0 ? 0.8 : 0.05),
+                    Math.random() * 0.2 + (dy > 0 ? 0.8 : 0.05),
+                    Math.random() * 0.2 + (dx < 0 ? 0.8 : 0.05)
                 ];
-
                 agent.qValues = qValues;
-                
-                // Choose action (with some randomness)
-                let action;
-                if (Math.random() < 0.1) {
-                    action = Math.floor(Math.random() * 4);
-                } else {
-                    action = qValues.indexOf(Math.max(...qValues));
-                }
 
-                // Apply action
+                const action = Math.random() < agent.epsilon ? Math.floor(Math.random() * 4) : qValues.indexOf(Math.max(...qValues));
+
                 const directions = [[-1, 0], [0, 1], [1, 0], [0, -1]];
                 const [dy_action, dx_action] = directions[action];
                 const newY = y + dy_action;
                 const newX = x + dx_action;
 
-                // Check validity
-                if (newY >= 0 && newY < maze.length && 
-                    newX >= 0 && newX < maze[0].length && 
-                    maze[newY][newX] !== WALL) {
-                    
+                if (newY >= 0 && newY < maze.length && newX >= 0 && newX < maze[0].length && maze[newY][newX] !== WALL) {
                     agent.pos = [newY, newX];
                     agent.trajectory.push([newY, newX]);
                     agent.explored.add(`${newY},${newX}`);
-                    
-                    // Calculate reward
+
+                    let reward = -0.01;
                     const cellType = maze[newY][newX];
-                    let reward = -0.01; // Time penalty
                     
                     if (cellType === GOAL) {
                         reward = 100;
-                        document.getElementById(`dqn-status`).className = 'status-indicator status-completed';
+                        agent.steps = 200; // FORCE STOP at goal
+                        console.log("DQN Agent reached GOAL!");
                     } else if (cellType === TRAP) {
                         reward = -10;
                     } else if (cellType === MISLEAD) {
-                        reward = 0.5;
-                    } else {
-                        // Distance-based reward
-                        const oldDist = Math.sqrt(dx * dx + dy * dy);
-                        const newDist = Math.sqrt(
-                            Math.pow(goalPos[0] - newY, 2) + 
-                            Math.pow(goalPos[1] - newX, 2)
-                        );
-                        reward += (oldDist - newDist) * 0.5;
+                        reward = 0.5; // Misleading gives small reward but doesn't stop
                     }
                     
                     agent.reward += reward;
-                } else {
-                    agent.reward -= 1; // Wall penalty
                 }
-
                 agent.steps++;
+                agent.epsilon = Math.max(0.01, agent.epsilon * 0.995);
             }
         }
-            
-            // Update generation/episode counter
-            if (agentType === 'neat') {
-                document.getElementById('neat-gen').textContent = Math.floor(frame / 600);
-            } else {
-                document.getElementById('dqn-episode').textContent = Math.floor(frame / 60);
-                document.getElementById('dqn-epsilon').textContent = 
-                    (1.0 - Math.floor(frame / 60) * 0.002).toFixed(2);
-            }
-            
-            // Simulate neural network decision making
-            // Different strategies for NEAT vs DQN
-            const goalPos = [8, 8];
-            const dx = goalPos[1] - x;
-            const dy = goalPos[0] - y;
-            
-            let qValues;
-            if (agentType === 'neat') {
-                // NEAT: More explorative, considers multiple paths
-                qValues = [
-                    Math.random() * 0.3 + (dy < 0 ? 0.5 : 0.1),  // Up
-                    Math.random() * 0.3 + (dx > 0 ? 0.5 : 0.1),  // Right
-                    Math.random() * 0.3 + (dy > 0 ? 0.5 : 0.1),  // Down
-                    Math.random() * 0.3 + (dx < 0 ? 0.5 : 0.1)   // Left
-                ];
-            } else {
-                // DQN: More deterministic, value-based
-                qValues = [
-                    Math.random() * 0.2 + (dy < 0 ? 0.7 : 0.05), // Up
-                    Math.random() * 0.2 + (dx > 0 ? 0.7 : 0.05), // Right
-                    Math.random() * 0.2 + (dy > 0 ? 0.7 : 0.05), // Down
-                    Math.random() * 0.2 + (dx < 0 ? 0.7 : 0.05)  // Left
-                ];
-            }
 
-            agent.qValues = qValues;
-            
-            // Choose action (with some randomness)
-            let action;
-            if (Math.random() < 0.1) {
-                action = Math.floor(Math.random() * 4);
-            } else {
-                action = qValues.indexOf(Math.max(...qValues));
-            }
-
-            // Apply action
-            const directions = [[-1, 0], [0, 1], [1, 0], [0, -1]];
-            const [dy_action, dx_action] = directions[action];
-            const newY = y + dy_action;
-            const newX = x + dx_action;
-
-            // Check validity
-            if (newY >= 0 && newY < maze.length && 
-                newX >= 0 && newX < maze[0].length && 
-                maze[newY][newX] !== WALL) {
-                
-                agent.pos = [newY, newX];
-                agent.trajectory.push([newY, newX]);
-                agent.explored.add(`${newY},${newX}`);
-                
-                // Calculate reward
-                const cellType = maze[newY][newX];
-                let reward = -0.01; // Time penalty
-                
-                if (cellType === GOAL) {
-                    reward = 100;
-                    document.getElementById(`${agentType}-status`).className = 'status-indicator status-completed';
-                } else if (cellType === TRAP) {
-                    reward = -10;
-                } else if (cellType === MISLEAD) {
-                    reward = 0.5;
-                } else {
-                    // Distance-based reward
-                    const oldDist = Math.sqrt(dx * dx + dy * dy);
-                    const newDist = Math.sqrt(
-                        Math.pow(goalPos[0] - newY, 2) + 
-                        Math.pow(goalPos[1] - newX, 2)
-                    );
-                    reward += (oldDist - newDist) * 0.5;
-                }
-                
-                agent.reward += reward;
-            } else {
-                agent.reward -= 1; // Wall penalty
-            }
-
-            agent.steps++;
-        }
-
+        // Draw performance chart
         function drawChart() {
             const ctx = chartCtx;
             const width = chartCanvas.width;
             const height = chartCanvas.height;
-            
+
             ctx.clearRect(0, 0, width, height);
-            
-            if (history.neat.steps.length < 2) return;
-            
-            // Draw grid
-            ctx.strokeStyle = '#e0e0e0';
-            ctx.lineWidth = 1;
-            for (let i = 0; i <= 5; i++) {
-                const y = (height / 5) * i;
+
+            if (history.neat.length < 2 && history.dqn.length < 2) return;
+
+            // Draw NEAT line
+            if (history.neat.length > 1) {
+                ctx.strokeStyle = '#3498db';
+                ctx.lineWidth = 3;
                 ctx.beginPath();
-                ctx.moveTo(0, y);
-                ctx.lineTo(width, y);
+                history.neat.forEach((val, i) => {
+                    const x = (i / Math.max(history.neat.length, history.dqn.length)) * width;
+                    const y = height - (val / 100) * height;
+                    if (i === 0) ctx.moveTo(x, y);
+                    else ctx.lineTo(x, y);
+                });
                 ctx.stroke();
             }
 
-            // Draw NEAT line
-            ctx.strokeStyle = '#3498db';
-            ctx.lineWidth = 2;
-            ctx.beginPath();
-            
-            const maxSteps = Math.max(...history.neat.steps, ...history.dqn.steps, 100);
-            const stepWidth = width / Math.max(history.neat.steps.length, 50);
-            
-            history.neat.steps.forEach((steps, i) => {
-                const x = i * stepWidth;
-                const y = height - (steps / maxSteps) * height;
-                if (i === 0) ctx.moveTo(x, y);
-                else ctx.lineTo(x, y);
-            });
-            ctx.stroke();
-
             // Draw DQN line
-            ctx.strokeStyle = '#e74c3c';
-            ctx.beginPath();
-            
-            history.dqn.steps.forEach((steps, i) => {
-                const x = i * stepWidth;
-                const y = height - (steps / maxSteps) * height;
-                if (i === 0) ctx.moveTo(x, y);
-                else ctx.lineTo(x, y);
-            });
-            ctx.stroke();
+            if (history.dqn.length > 1) {
+                ctx.strokeStyle = '#e74c3c';
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                history.dqn.forEach((val, i) => {
+                    const x = (i / Math.max(history.neat.length, history.dqn.length)) * width;
+                    const y = height - (val / 100) * height;
+                    if (i === 0) ctx.moveTo(x, y);
+                    else ctx.lineTo(x, y);
+                });
+                ctx.stroke();
+            }
         }
 
+        // Animation loop
         function animate() {
             if (!isRunning) return;
 
             frame++;
-            
-            if (frame % (60 / speed) === 0) {
-                // Update both agents
-                ['neat', 'dqn'].forEach(agentType => {
-                    if (agentType === 'neat') {
-                        // Check if any agent still active
-                        const anyActive = agents.neat.population.some(a => a.active && a.steps < 500);
-                        if (anyActive) {
-                            simulateStep(agentType);
-                            drawMaze(neatCtx, agentType);
-                            updateStats(agentType);
-                            updateDecisionViz(agentType);
-                        } else if (frame % 600 === 0) {
-                            // New generation
-                            initNEATPopulation();
-                            agents.neat.current_gen++;
-                        }
-                    } else {
-                        const agent = agents.dqn;
-                        if (agent.steps < 500) {
-                            const [y, x] = agent.pos;
-                            if (maze[y][x] !== GOAL) {
-                                simulateStep(agentType);
-                                drawMaze(dqnCtx, agentType);
-                                updateStats(agentType);
-                                updateDecisionViz(agentType);
-                            }
-                        }
-                    }
-                });
+            goalPulse += 0.05; // Animate goal pulsing
 
-                // Update chart every 10 steps
-                if (frame % 600 === 0) {
-                    history.neat.steps.push(agents.neat.best?.steps || 500);
-                    history.neat.rewards.push(agents.neat.best?.reward || -100);
-                    history.dqn.steps.push(agents.dqn.steps);
-                    history.dqn.rewards.push(agents.dqn.reward);
+            if (frame % (60 / speed) === 0) {
+                simulateStep('neat');
+                simulateStep('dqn');
+
+                drawMaze(neatCtx, 'neat');
+                drawMaze(dqnCtx, 'dqn');
+
+                updateStats('neat');
+                updateStats('dqn');
+
+                updateDecisionViz('neat');
+                updateDecisionViz('dqn');
+
+                // Update history
+                if (frame % 300 === 0) {
+                    history.neat.push(agents.neat.population[0]?.reward || 0);
+                    history.dqn.push(agents.dqn.reward);
                     drawChart();
+                }
+
+                // Check if generation complete
+                const allInactive = agents.neat.population.every(a => !a.active || a.steps >= 200);
+                if (allInactive && frame % 300 === 0) {
+                    agents.neat.generation++;
+                    initNEATPopulation();
+                }
+
+                // Check if episode complete
+                if (agents.dqn.steps >= 200 && frame % 300 === 0) {
+                    agents.dqn.episode++;
+                    agents.dqn.pos = [0, 0];
+                    agents.dqn.steps = 0;
+                    agents.dqn.reward = 0;
+                    agents.dqn.explored = new Set(['0,0']);
+                    agents.dqn.trajectory = [[0, 0]];
                 }
             }
 
             requestAnimationFrame(animate);
         }
 
+        // Control functions
         function startSimulation() {
             if (!isRunning) {
                 isRunning = true;
-                document.getElementById('neat-status').className = 'status-indicator status-running pulsing';
-                document.getElementById('dqn-status').className = 'status-indicator status-running pulsing';
                 console.log("Simulation started!");
                 animate();
             }
@@ -1210,92 +888,60 @@
 
         function pauseSimulation() {
             isRunning = false;
-            document.getElementById('neat-status').className = 'status-indicator status-paused';
-            document.getElementById('dqn-status').className = 'status-indicator status-paused';
             console.log("Simulation paused!");
         }
 
         function resetSimulation() {
             isRunning = false;
             frame = 0;
+            agents.neat.generation = 0;
+            agents.dqn.episode = 0;
+            agents.dqn.epsilon = 1.0;
             
-            // Reset NEAT population
             initNEATPopulation();
-            agents.neat.current_gen = 0;
             
-            // Reset DQN
-            agents.dqn = {
-                pos: [0, 0],
-                steps: 0,
-                reward: 0,
-                explored: new Set(['0,0']),
-                trajectory: [[0, 0]],
-                qValues: [0.25, 0.25, 0.25, 0.25],
-                episode: 0
-            };
-            
-            // Update displays
-            document.getElementById('neat-gen').textContent = '0';
-            document.getElementById('dqn-episode').textContent = '0';
-            document.getElementById('dqn-epsilon').textContent = '1.00';
-            
-            // Draw everything
+            agents.dqn.pos = [0, 0];
+            agents.dqn.steps = 0;
+            agents.dqn.reward = 0;
+            agents.dqn.explored = new Set(['0,0']);
+            agents.dqn.trajectory = [[0, 0]];
+            agents.dqn.qValues = [0.25, 0.25, 0.25, 0.25];
+
+            history.neat = [];
+            history.dqn = [];
+
             drawMaze(neatCtx, 'neat');
             drawMaze(dqnCtx, 'dqn');
             updateStats('neat');
             updateStats('dqn');
             updateDecisionViz('neat');
             updateDecisionViz('dqn');
-            
-            // Reset status indicators
-            document.getElementById('neat-status').className = 'status-indicator status-paused';
-            document.getElementById('dqn-status').className = 'status-indicator status-paused';
-
-            // Reset history
-            history.neat = { steps: [], rewards: [] };
-            history.dqn = { steps: [], rewards: [] };
             drawChart();
-            
+
             console.log("Simulation reset!");
-        }});
-
-            history.neat = { steps: [], rewards: [] };
-            history.dqn = { steps: [], rewards: [] };
-            drawChart();
         }
 
         function changeSpeed() {
             speed = speed === 1 ? 2 : speed === 2 ? 4 : 1;
-            document.querySelector('.btn-speed').textContent = `⚡ Speed: ${speed}x`;
+            document.getElementById('btnSpeed').textContent = `⚡ Speed: ${speed}x`;
         }
 
-        // Initialize
-        window.onload = function() {
-            console.log("Starting dashboard initialization...");
+        // Initialize on load
+        window.addEventListener('DOMContentLoaded', function() {
+            console.log("Initializing dashboard...");
             
-            chartCanvas.width = chartCanvas.parentElement.clientWidth - 30;
-            
-            // Initialize everything
+            // Setup
             initNEATPopulation();
             resetSimulation();
-            
-            // Draw initial state
-            drawMaze(neatCtx, 'neat');
-            drawMaze(dqnCtx, 'dqn');
-            updateStats('neat');
-            updateStats('dqn');
-            updateDecisionViz('neat');
-            updateDecisionViz('dqn');
-            drawChart();
-            
-            // Add event listeners to buttons
-            document.getElementById('btn-start').addEventListener('click', startSimulation);
-            document.getElementById('btn-pause').addEventListener('click', pauseSimulation);
-            document.getElementById('btn-reset').addEventListener('click', resetSimulation);
-            document.getElementById('btn-speed').addEventListener('click', changeSpeed);
-            
-            console.log("Dashboard initialized successfully!");
-        };
+
+            // Add button listeners
+            document.getElementById('btnStart').addEventListener('click', startSimulation);
+            document.getElementById('btnPause').addEventListener('click', pauseSimulation);
+            document.getElementById('btnReset').addEventListener('click', resetSimulation);
+            document.getElementById('btnSpeed').addEventListener('click', changeSpeed);
+
+            console.log("Dashboard ready! Click Start to begin.");
+        });
     </script>
 </body>
 </html>
