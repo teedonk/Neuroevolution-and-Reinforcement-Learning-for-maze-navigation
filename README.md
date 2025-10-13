@@ -88,12 +88,14 @@ Neuroevolution-and-Reinforcement-Learning-for-maze-navigation/
 │
 ├── neuroevolution/              # NEAT implementation
 │   ├── neat_solver.py          # Main NEAT trainer with evolution
-│   ├── config-neat.txt         # NEAT hyperparameters
-│   └── logs/                   # Generation-level statistics
+│   └── config-neat.txt         # NEAT hyperparameters
 │
 ├── reinforcement_learning/      # DQN implementation
-│   ├── dqn_solver.py           # DQN with target network
-│   └── logs/                   # Episode-level statistics
+│   └── dqn_solver.py           # DQN with target network                
+|
+├── logs/                         
+│   ├── dqn/               # Episode-level statistics
+│   └── neat/               # Generation-level statistics
 |
 ├── notebooks/                   # Jupyter notebooks
 │   ├── training_comparison.ipynb
