@@ -1199,16 +1199,20 @@
         }
 
         function startSimulation() {
-            isRunning = true;
-            document.getElementById('neat-status').className = 'status-indicator status-running pulsing';
-            document.getElementById('dqn-status').className = 'status-indicator status-running pulsing';
-            animate();
+            if (!isRunning) {
+                isRunning = true;
+                document.getElementById('neat-status').className = 'status-indicator status-running pulsing';
+                document.getElementById('dqn-status').className = 'status-indicator status-running pulsing';
+                console.log("Simulation started!");
+                animate();
+            }
         }
 
         function pauseSimulation() {
             isRunning = false;
             document.getElementById('neat-status').className = 'status-indicator status-paused';
             document.getElementById('dqn-status').className = 'status-indicator status-paused';
+            console.log("Simulation paused!");
         }
 
         function resetSimulation() {
@@ -1230,17 +1234,29 @@
                 episode: 0
             };
             
-            ['neat', 'dqn'].forEach(agentType => {
-                drawMaze(agentType === 'neat' ? neatCtx : dqnCtx, agentType);
-                updateStats(agentType);
-                updateDecisionViz(agentType);
-                
-                document.getElementById(`${agentType}-status`).className = 'status-indicator status-paused';
-            });
+            // Update displays
+            document.getElementById('neat-gen').textContent = '0';
+            document.getElementById('dqn-episode').textContent = '0';
+            document.getElementById('dqn-epsilon').textContent = '1.00';
+            
+            // Draw everything
+            drawMaze(neatCtx, 'neat');
+            drawMaze(dqnCtx, 'dqn');
+            updateStats('neat');
+            updateStats('dqn');
+            updateDecisionViz('neat');
+            updateDecisionViz('dqn');
+            
+            // Reset status indicators
+            document.getElementById('neat-status').className = 'status-indicator status-paused';
+            document.getElementById('dqn-status').className = 'status-indicator status-paused';
 
+            // Reset history
             history.neat = { steps: [], rewards: [] };
             history.dqn = { steps: [], rewards: [] };
             drawChart();
+            
+            console.log("Simulation reset!");
         }});
 
             history.neat = { steps: [], rewards: [] };
@@ -1256,7 +1272,21 @@
         // Initialize
         window.onload = function() {
             chartCanvas.width = chartCanvas.parentElement.clientWidth - 30;
+            
+            // Initialize everything
+            initNEATPopulation();
             resetSimulation();
+            
+            // Draw initial state
+            drawMaze(neatCtx, 'neat');
+            drawMaze(dqnCtx, 'dqn');
+            updateStats('neat');
+            updateStats('dqn');
+            updateDecisionViz('neat');
+            updateDecisionViz('dqn');
+            drawChart();
+            
+            console.log("Dashboard initialized successfully!");
         };
     </script>
 </body>
