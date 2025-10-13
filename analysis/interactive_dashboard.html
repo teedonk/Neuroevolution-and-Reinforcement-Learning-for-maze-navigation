@@ -425,10 +425,10 @@
             <div class="controls">
                 <h3 style="text-align: center; margin-bottom: 15px;">Simulation Controls</h3>
                 <div class="button-group">
-                    <button class="btn-start" onclick="startSimulation()">▶️ Start</button>
-                    <button class="btn-pause" onclick="pauseSimulation()">⏸️ Pause</button>
-                    <button class="btn-reset" onclick="resetSimulation()">🔄 Reset</button>
-                    <button class="btn-speed" onclick="changeSpeed()">⚡ Speed: 1x</button>
+                    <button class="btn-start" id="btn-start">▶️ Start</button>
+                    <button class="btn-pause" id="btn-pause">⏸️ Pause</button>
+                    <button class="btn-reset" id="btn-reset">🔄 Reset</button>
+                    <button class="btn-speed" id="btn-speed">⚡ Speed: 1x</button>
                 </div>
             </div>
 
@@ -1271,6 +1271,8 @@
 
         // Initialize
         window.onload = function() {
+            console.log("Starting dashboard initialization...");
+            
             chartCanvas.width = chartCanvas.parentElement.clientWidth - 30;
             
             // Initialize everything
@@ -1285,6 +1287,12 @@
             updateDecisionViz('neat');
             updateDecisionViz('dqn');
             drawChart();
+            
+            // Add event listeners to buttons
+            document.getElementById('btn-start').addEventListener('click', startSimulation);
+            document.getElementById('btn-pause').addEventListener('click', pauseSimulation);
+            document.getElementById('btn-reset').addEventListener('click', resetSimulation);
+            document.getElementById('btn-speed').addEventListener('click', changeSpeed);
             
             console.log("Dashboard initialized successfully!");
         };
