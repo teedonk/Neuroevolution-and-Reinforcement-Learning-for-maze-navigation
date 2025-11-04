@@ -404,35 +404,31 @@ class DQNMazeSolver:
         return fig
     
     def evaluate(self, num_episodes: int = 10, render: bool = False):
-        """Evaluate trained agent."""
+        """Evaluate trained agent with pure exploitation (no exploration)."""
         self.policy_net.eval()
         results = []
-        
+
         for episode in range(num_episodes):
             state, _ = self.env.reset(seed=episode)  # Different seed each episode
             episode_reward = 0
             steps = 0
             done = False
-            
+
             while not done and steps < 500:
-                # Use trained policy with small exploration for robustness
-                if np.random.random() < 0.05:  # 5% exploration during eval
-                    action = self.env.action_space.sample()
-                else:
-                    action = self.select_action(state, training=False)
-                
+                # Use trained policy without exploration (pure exploitation)
+                action = self.select_action(state, training=False)
+
                 state, reward, terminated, truncated, info = self.env.step(action)
                 episode_reward += reward
                 steps += 1
                 done = terminated or truncated
-                
+
                 if render and episode == 0:
                     self.env.render()
-            
-            reached_goal = (terminated and 
-                          self.env.maze[int(self.env.agent_pos[0]), 
-                          int(self.env.agent_pos[1])] == self.env.GOAL)
-            
+
+            reached_goal = terminated and self.env.maze[int(self.env.agent_pos[0]),
+                          int(self.env.agent_pos[1])] == self.env.GOAL
+
             results.append({
                 'episode': episode,
                 'reward': episode_reward,
@@ -440,12 +436,69 @@ class DQNMazeSolver:
                 'reached_goal': reached_goal,
                 'trajectory': self.env.get_trajectory()
             })
-            
-            print(f"Episode {episode+1}: Reward={episode_reward:.2f}, " + 
+
+            print(f"Episode {episode+1}: Reward={episode_reward:.2f}, " +
                   f"Steps={steps}, Goal={'YES' if reached_goal else 'NO'}")
-        
+
         self.policy_net.train()
         return results
+
+    def export_for_dashboard(self, filepath: str = 'analysis/dqn_dashboard_data.json'):
+        """Export model decisions and training data for interactive dashboard."""
+        import os
+        os.makedirs(os.path.dirname(filepath), exist_ok=True)
+
+        self.policy_net.eval()
+
+        # Generate Q-value heatmap for all maze positions
+        maze_height, maze_width = self.env.maze.shape
+        q_value_map = []
+        action_map = []
+
+        for i in range(maze_height):
+            q_row = []
+            action_row = []
+            for j in range(maze_width):
+                # Skip walls
+                if self.env.maze[i, j] == self.env.WALL:
+                    q_row.append([0, 0, 0, 0])
+                    action_row.append(-1)
+                    continue
+
+                # Create state for this position
+                self.env.agent_pos = np.array([i, j], dtype=np.float32)
+                state = self.env._get_observation()
+
+                # Get Q-values
+                with torch.no_grad():
+                    state_tensor = torch.FloatTensor(state).unsqueeze(0).to(self.device)
+                    q_values = self.policy_net(state_tensor).cpu().numpy()[0]
+
+                q_row.append(q_values.tolist())
+                action_row.append(int(np.argmax(q_values)))
+
+            q_value_map.append(q_row)
+            action_map.append(action_row)
+
+        # Export data
+        export_data = {
+            'training_stats': self.training_stats,
+            'q_value_map': q_value_map,
+            'action_map': action_map,
+            'maze': self.env.maze.tolist(),
+            'best_reward': self.best_reward,
+            'best_trajectory': [pos.tolist() for pos in self.best_trajectory] if self.best_trajectory else [],
+            'final_epsilon': self.epsilon
+        }
+
+        with open(filepath, 'w') as f:
+            json.dump(export_data, f, indent=2)
+
+        print(f"Dashboard data exported to {filepath}")
+        self.policy_net.train()
+        self.env.reset()  # Reset environment state
+
+        return export_data
 
 if __name__ == '__main__':
     # Initialize environment and solver
