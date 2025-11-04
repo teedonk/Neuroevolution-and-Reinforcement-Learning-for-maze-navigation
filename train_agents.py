@@ -107,7 +107,11 @@ def main():
             # Visualize
             print("\n📈 Generating visualizations...")
             neat_solver.visualize_training()
-            
+
+            # Export for dashboard
+            print("\n💾 Exporting data for interactive dashboard...")
+            neat_solver.export_for_dashboard()
+
         except Exception as e:
             print(f"\n❌ NEAT training failed: {e}")
             import traceback
@@ -145,7 +149,11 @@ def main():
             # Visualize
             print("\n📈 Generating visualizations...")
             dqn_solver.visualize_training()
-            
+
+            # Export for dashboard
+            print("\n💾 Exporting data for interactive dashboard...")
+            dqn_solver.export_for_dashboard()
+
         except Exception as e:
             print(f"\n❌ DQN training failed: {e}")
             import traceback
@@ -164,9 +172,9 @@ def main():
     
     print("\n📊 Next steps:")
     print("   1. View training plots (check the figures that opened)")
-    print("   2. Run comparison: python compare_agents.py")
-    print("   3. Test robustness: python test_robustness.py")
-    print("   4. Open dashboard: analysis/interactive_dashboard.html")
+    print("   2. Launch real-time dashboard: python view_dashboard.py")
+    print("   3. Run comparison: python compare_agents.py")
+    print("   4. Test robustness: python test_robustness.py")
     print()
     
     return 0
