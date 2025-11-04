@@ -150,28 +150,25 @@ class NEATMazeSolver:
         """Train NEAT for specified generations."""
         print("Starting NEAT Training...")
         print(f"Configuration: {self.config}")
-        
+
         # Create population
         population = neat.Population(self.config)
-        
-        # Add reporters
+
+        # Add reporters (skip Checkpointer due to pickling issues with Python 3.14)
         population.add_reporter(neat.StdOutReporter(True))
         stats = neat.StatisticsReporter()
         population.add_reporter(stats)
-        population.add_reporter(neat.Checkpointer(10, 
-                                filename_prefix=f'{self.log_dir}/neat-checkpoint-'))
-        
-        # Track species
-        def track_species(species_set, generation):
-            self.generation_stats['species_count'].append(len(species_set.species))
-        
+
+        # Note: Checkpointer disabled due to pickling issues with itertools.count
+        # Manual checkpointing is done in eval_genomes instead
+
         # Run evolution
         winner = population.run(self.eval_genomes, generations)
-        
+
         # Save final results
         self.best_genome = winner
         self.save_results(winner, stats)
-        
+
         return winner
     
     def save_checkpoint(self):
@@ -276,43 +273,36 @@ class NEATMazeSolver:
         return fig
     
     def evaluate_best(self, render: bool = True, num_episodes: int = 5):
-        """Evaluate the best genome."""
+        """Evaluate the best genome with pure exploitation (no exploration)."""
         if self.best_genome is None:
             print("No best genome found. Train first!")
             return []
-        
-        # CRITICAL: Use self.config directly - it's already loaded
+
         import neat
         net = neat.nn.FeedForwardNetwork.create(self.best_genome, self.config)
-        
+
         results = []
         for episode in range(num_episodes):
             obs, _ = self.env.reset(seed=episode)
             done = False
             total_reward = 0
             steps = 0
-            
+
             while not done and steps < 500:
                 output = net.activate(obs)
-                action = output.index(max(output))
-                
-                # Small exploration for robustness
-                import random
-                if random.random() < 0.05:
-                    action = self.env.action_space.sample()
-                
+                action = np.argmax(output)  # Use np.argmax for consistency
+
                 obs, reward, terminated, truncated, info = self.env.step(action)
                 total_reward += reward
                 steps += 1
                 done = terminated or truncated
-                
+
                 if render and episode == 0:
                     self.env.render()
-            
-            reached_goal = (terminated and 
-                           self.env.maze[int(self.env.agent_pos[0]), 
-                           int(self.env.agent_pos[1])] == self.env.GOAL)
-            
+
+            reached_goal = terminated and self.env.maze[int(self.env.agent_pos[0]),
+                           int(self.env.agent_pos[1])] == self.env.GOAL
+
             results.append({
                 'episode': episode,
                 'reward': total_reward,
@@ -320,10 +310,82 @@ class NEATMazeSolver:
                 'reached_goal': reached_goal,
                 'trajectory': self.env.get_trajectory()
             })
-            
+
             print(f"Episode {episode+1}: Reward={total_reward:.2f}, Steps={steps}, Goal={'YES' if reached_goal else 'NO'}")
-        
+
         return results
+
+    def export_for_dashboard(self, filepath: str = 'analysis/neat_dashboard_data.json'):
+        """Export network decisions and training data for interactive dashboard."""
+        if self.best_genome is None:
+            print("No best genome found. Train first!")
+            return None
+
+        import os
+        import neat
+        os.makedirs(os.path.dirname(filepath), exist_ok=True)
+
+        net = neat.nn.FeedForwardNetwork.create(self.best_genome, self.config)
+
+        # Generate action heatmap for all maze positions
+        maze_height, maze_width = self.env.maze.shape
+        output_map = []
+        action_map = []
+
+        for i in range(maze_height):
+            output_row = []
+            action_row = []
+            for j in range(maze_width):
+                # Skip walls
+                if self.env.maze[i, j] == self.env.WALL:
+                    output_row.append([0, 0, 0, 0])
+                    action_row.append(-1)
+                    continue
+
+                # Create state for this position
+                self.env.agent_pos = np.array([i, j], dtype=np.float32)
+                state = self.env._get_observation()
+
+                # Get network outputs
+                outputs = net.activate(state)
+                output_row.append(list(outputs))
+                action_row.append(int(np.argmax(outputs)))
+
+            output_map.append(output_row)
+            action_map.append(action_row)
+
+        # Convert numpy arrays in trajectory to lists
+        best_traj = self.generation_stats.get('best_trajectory', [])
+        if best_traj and len(best_traj) > 0:
+            if isinstance(best_traj[0], np.ndarray):
+                best_traj = [pos.tolist() for pos in best_traj]
+
+        # Export data
+        export_data = {
+            'generation_stats': {
+                'generation': self.generation_stats['generation'],
+                'best_fitness': self.generation_stats['best_fitness'],
+                'avg_fitness': self.generation_stats['avg_fitness'],
+                'min_fitness': self.generation_stats['min_fitness'],
+                'species_count': self.generation_stats['species_count'],
+                'success_rate': self.generation_stats['success_rate'],
+                'avg_steps': self.generation_stats['avg_steps']
+            },
+            'output_map': output_map,
+            'action_map': action_map,
+            'maze': self.env.maze.tolist(),
+            'best_fitness': self.best_fitness,
+            'best_trajectory': best_traj,
+            'current_generation': self.current_generation
+        }
+
+        with open(filepath, 'w') as f:
+            json.dump(export_data, f, indent=2)
+
+        print(f"Dashboard data exported to {filepath}")
+        self.env.reset()  # Reset environment state
+
+        return export_data
 
 def create_neat_config(filename: str = 'config-neat.txt'):
     """Create NEAT configuration file."""
