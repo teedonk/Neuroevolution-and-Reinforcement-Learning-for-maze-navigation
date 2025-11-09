@@ -133,23 +133,23 @@ class MazeEnv(gym.Env):
         if cell_type == self.MISLEAD:
             return 0.5  # Small positive to make it tempting
         
-        # Distance-based shaping reward
+        # Distance-based shaping reward (increased multiplier for better guidance)
         if self.use_distance_reward:
             old_dist = np.linalg.norm(self.agent_pos - self.goal_pos)
             new_dist = np.linalg.norm(new_pos - self.goal_pos)
-            distance_reward = (old_dist - new_dist) * 0.5
+            distance_reward = (old_dist - new_dist) * 1.0  # Increased from 0.5
         else:
             distance_reward = 0.0
-        
-        # Penalty for revisiting cells
+
+        # Penalty for revisiting cells (increased to discourage loops)
         if tuple(new_pos) in self.visited_cells:
-            revisit_penalty = -0.2
+            revisit_penalty = -0.5  # Increased from -0.2
         else:
             revisit_penalty = 0.1  # Small reward for exploration
-        
+
         # Small time penalty to encourage efficiency
         time_penalty = -0.01
-        
+
         return distance_reward + revisit_penalty + time_penalty
     
     def step(self, action: int) -> Tuple[np.ndarray, float, bool, bool, Dict]:
